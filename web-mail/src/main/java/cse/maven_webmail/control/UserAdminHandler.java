@@ -28,6 +28,7 @@ public class UserAdminHandler extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -80,8 +81,11 @@ public class UserAdminHandler extends HttpServlet {
             //String userid = "admin";
             String password = request.getParameter("password");// for test
             //String password = "admin";
-            out.println("userid = " + userid + "<br>");
-            out.println("password = " + password + "<br>");
+            
+            String useridfilter = XSSFilter.Filter("userid = " + userid + "<br>");
+            String userpasswordfilter = XSSFilter.Filter("password = " + password + "<br>");
+            out.println(useridfilter);
+            out.println(userpasswordfilter);
             out.flush();
             // if (addUser successful)  사용자 등록 성공 팦업창
             // else 사용자 등록 실패 팝업창
