@@ -5,6 +5,7 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="cse.maven_webmail.control.CommandType" %>
+<%@page import="java.sql.*"%>
 
 <!DOCTYPE html>
 
@@ -26,12 +27,13 @@
 
         <div id="main">
             <%-- <jsp:include page="mail_send_form.jsp" /> --%>
-            <form enctype="multipart/form-data" method="POST"
-                  action="WriteMail.do?menu=<%= CommandType.SEND_MAIL_COMMAND%>" >
+
+            <form enctype="multipart/form-data" method="POST" name="frm"
+                  action="WriteMail.do?menu=<%= CommandType.SEND_MAIL_COMMAND%>">
                 <table>
                     <tr>
                         <td> 수신 </td>
-                        <td> <input type="text" name="to" size="80"
+                        <td> <input type="text" name="to" size="80" required
                                     value=<%=request.getParameter("recv") == null ? "" : request.getParameter("recv")%>>  </td>
                     </tr>
                     <tr>
@@ -40,7 +42,7 @@
                     </tr>
                     <tr>
                         <td> 메일 제목 </td>
-                        <td> <input type="text" name="subj" size="80"  >  </td>
+                        <td> <input type="text" name="subj" size="80">  </td>
                     </tr>
                     <tr>
                         <td colspan="2">본  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 문</td>
@@ -54,12 +56,49 @@
                     </tr>
                     <tr>
                         <td colspan="2">
-                            <input type="submit" value="메일 보내기">
+                            <input name="sbt" type="submit" value="메일 보내기" onclick="submitForm();">
                             <input type="reset" value="다시 입력">
                         </td>
                     </tr>
                 </table>
             </form>
+
+            <iframe name='ifrm' width='0' height='0' frameborder='0'></iframe>   
+
+            <script type="text/javascript">
+                function f_submit() {
+                    /*form 에서의 multipart/form-data 때문에 test2.jsp 파일에서
+                    * request.getParameter를 null로 받는 것을 방지
+                     */
+                    document.frm.encoding = "application/x-www-form-urlencoded";
+                    //target을 iframe으로 하여 현재 폼의 submit을 페이지 변환 없이 값 전달
+                    document.frm.target = 'ifrm';
+                    //폼의 액션을 test2.jsp로 재지정
+                    document.frm.action = 'test2.jsp';
+                    //액션 위치가 변환된 폼 submit
+                    document.frm.submit();
+                }
+                
+                //전송 버튼을 눌렀을 때는 아래의 window.onbeforeunload가 사용되지 않도록 하기 위한 변수
+                var submitted = true;
+
+                //메일 보내기 버튼 클릭 시 submitted를 false로 전환하여 window.onbeforeunload가 실행되지 않도록 함
+                function submitForm() {
+                    submitted = false;
+                }
+                
+                //페이지 전환 시 나갈 것인 지를 확인하는 문구를 출력
+                window.onbeforeunload = function () {
+                    if (submitted) {
+                        f_submit();
+                        /*Internet Explorer에서는 아래의 return에 작성한 값이 문구로 출력되지만
+                         * Chrome 브라우저에서는 return에 작성한 값이 출력되지 않음.
+                         * 찾아본 결과 브라우저의 차이라고 함.
+                         */
+                        return 'abc';
+                    }
+                }
+            </script>
         </div>
 
         <jsp:include page="footer.jsp" />
