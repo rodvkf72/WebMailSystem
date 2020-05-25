@@ -34,21 +34,25 @@
                     <tr>
                         <td> 수신 </td>
                         <td> <input type="text" name="to" size="80" required
-                                    value=<%=request.getParameter("recv") == null ? "" : request.getParameter("recv")%>>  </td>
+                                    value=<%=request.getParameter("to") == null ? "" : request.getParameter("to")%>>  </td>
+                        <!--
+                        -- 기존에 "to" 말고 "recv" 라고 적혀 있었는데 왜 있었는지 모르겠음
+                        -- 요청값을 받는 부분이라 수정해도 전송하는데 이상 없을거라 생각하고 바꾸고 테스트 한 결과 이상 없음
+                        -->
                     </tr>
                     <tr>
                         <td>참조</td>
-                        <td> <input type="text" name="cc" size="80">  </td>
+                        <td> <input type="text" name="cc" size="80" value="<%=request.getParameter("cc") == null ? "" : request.getParameter("cc")%>">  </td>
                     </tr>
                     <tr>
                         <td> 메일 제목 </td>
-                        <td> <input type="text" name="subj" size="80">  </td>
+                        <td> <input type="text" name="subj" size="80" value="<%=request.getParameter("subj") == null ? "" : request.getParameter("subj")%>">  </td>
                     </tr>
                     <tr>
                         <td colspan="2">본  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 문</td>
                     </tr>
                     <tr>  <%-- TextArea    --%>
-                        <td colspan="2">  <textarea rows="15" name="body" cols="80"></textarea> </td>
+                        <td colspan="2">  <textarea rows="15" name="body" cols="80"><%=request.getParameter("text") == null ? "" : request.getParameter("text")%></textarea> </td>
                     </tr>
                     <tr>
                         <td>첨부 파일</td>
@@ -67,8 +71,9 @@
 
             <script type="text/javascript">
                 function f_submit() {
-                    /*form 에서의 multipart/form-data 때문에 test2.jsp 파일에서
-                    * request.getParameter를 null로 받는 것을 방지
+                    /*
+                     * form 에서의 multipart/form-data 때문에 test2.jsp 파일에서
+                     * request.getParameter를 null로 받는 것을 방지
                      */
                     document.frm.encoding = "application/x-www-form-urlencoded";
                     //target을 iframe으로 하여 현재 폼의 submit을 페이지 변환 없이 값 전달
@@ -91,7 +96,8 @@
                 window.onbeforeunload = function () {
                     if (submitted) {
                         f_submit();
-                        /*Internet Explorer에서는 아래의 return에 작성한 값이 문구로 출력되지만
+                        /*
+                         * Internet Explorer에서는 아래의 return에 작성한 값이 문구로 출력되지만
                          * Chrome 브라우저에서는 return에 작성한 값이 출력되지 않음.
                          * 찾아본 결과 브라우저의 차이라고 함.
                          */

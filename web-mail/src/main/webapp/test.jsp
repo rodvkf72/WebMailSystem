@@ -25,6 +25,11 @@
             <%
                 Connection conn = null;
                 Statement stmt = null;
+                String to = null;
+                String cc = null;
+                String subj = null;
+                String text = null;
+
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mail?serverTimezone=UTC", "root", "1463");
@@ -33,14 +38,28 @@
                         throw new Exception("DB Connect Fail");
                     }
                     stmt = conn.createStatement();
-                    ResultSet rs = stmt.executeQuery("select * from test");
-                    while (rs.next()) {
-                        String to = rs.getString("test_to");
-                        String cc = rs.getString("test_cc");
-                        String subj = rs.getString("test_subj");
-                        String text = rs.getString("test_text");
-                        out.println("<br> 수신자 : " + to + "<br> 참조 : " + cc + "<br> 메일 제목 : " + subj + "<br> 본문 : " + text);
-                    }
+                    //복호화
+                    ResultSet decrypt_rs = stmt.executeQuery("SELECT "
+                            + "CAST(AES_DECRYPT(UNHEX(test_to), 'to') AS CHAR), "
+                            + "CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') AS CHAR), "
+                            + "CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') AS CHAR), "
+                            + "CAST(AES_DECRYPT(UNHEX(test_text), 'text') AS CHAR) FROM test;");
+
+                    while (decrypt_rs.next()) {
+                        to = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_to), 'to') as char)");
+                        cc = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') as char)");
+                        subj = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') as char)");
+                        text = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_text), 'text') as char)");%>
+                        
+            <form method="POST" action="write_mail.jsp">
+                수신자 : <input type="text" name="to" value="<%=to == null ? "" : to%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
+                참조 : <input type="text" name="cc" value="<%=cc == null ? "" : cc%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
+                메일 제목 : <input type="text" name="subj" value="<%=subj == null ? "" : subj%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
+                본문 : <input type="text" name="text" value="<%=text == null ? "" : text%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
+                <input type="submit" value="수정">
+            </form>
+                
+            <%}
                 } finally {
                     try {
                         stmt.close();
@@ -53,10 +72,11 @@
 
                     }
                 }
-            %>
+            %>  
+            
         </div>
-
+            
         <jsp:include page="footer.jsp" />
-
+        
     </body>
 </html>
