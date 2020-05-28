@@ -18,6 +18,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,6 +27,8 @@ import javax.mail.internet.MimeUtility;
  */
 public class SmtpAgent {
 
+    private static final Logger logger =  LoggerFactory.getLogger(FormParser.class);
+    
     protected String host = null;
     protected String userid = null;
     protected String to = null;
@@ -103,7 +107,7 @@ public class SmtpAgent {
         // 1. property 설정
         Properties props = System.getProperties();
         props.put("mail.smtp.host", this.host);
-        System.out.println("SMTP host : " + props.get("mail.smtp.host"));
+        logger.info("SMTP host : " + props.get("mail.smtp.host"));
 
         // 2. session 가져오기
         Session session = Session.getDefaultInstance(props, null);
@@ -176,12 +180,12 @@ public class SmtpAgent {
             if (this.file1 != null) {
                 File f = new File(this.file1);
                 if (!f.delete()) {
-                    System.err.println(this.file1 + " 파일 삭제가 제대로 안 됨.");
+                    logger.error(this.file1 + " 파일 삭제가 제대로 안 됨.");
                 }
             }
             status = true;
         } catch (Exception ex) {
-            System.out.println("sendMessage() error: " + ex);
+            logger.error("sendMessage() error: " + ex);
         } finally {
             return status;
         }

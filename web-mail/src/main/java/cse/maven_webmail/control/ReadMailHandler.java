@@ -4,6 +4,7 @@
  */
 package cse.maven_webmail.control;
 
+import cse.maven_webmail.model.FormParser;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,6 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.Pop3Agent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -23,9 +26,11 @@ import cse.maven_webmail.model.Pop3Agent;
  */
 public class ReadMailHandler extends HttpServlet {
 
+    private static final Logger logger =  LoggerFactory.getLogger(FormParser.class);
+    
     private final String homeDirectory = "/maven_webmail/";
-    private final String uploadTempDir = "C:/temp/upload";
-    private final String uploadTargetDir = "C:/temp/upload";
+    private final String uploadTempDir = "C:/jsp/upload";
+    private final String uploadTargetDir = "C:/jsp/upload";
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -72,8 +77,7 @@ public class ReadMailHandler extends HttpServlet {
             request.setCharacterEncoding("UTF-8");
             // LJM 041203 - 아래와 같이 해서 한글파일명 제대로 인식되는 것 확인했음.
             String fileName = request.getParameter("filename");
-            String outfileName = XSSFilter.Filter(">>>>>> DOWNLOAD: file name = " + fileName);
-            System.out.println(outfileName);
+            logger.info(">>>>>> DOWNLOAD: file name = " + fileName);
             // fileName에 있는 ' '는 '+'가 파라미터로 전송되는 과정에서 변한 것이므로
             // 다시 변환시켜줌.
 //            fileName = fileName.replaceAll(" ", "+");
@@ -86,8 +90,8 @@ public class ReadMailHandler extends HttpServlet {
             // 리눅스 서버 사용시
             //String downloadDir = "/var/spool/webmail/download/";
 
-            // 윈도우즈 환경 사용시
-            String downloadDir = "C:/temp/download/";
+            // 윈도우즈 환경 사용시 > 서버에 저장되는 파일 path 
+            String downloadDir = "C:/jsp/download/";
             // LJM 090430 : 수정해야 할 부분 - end   ------------------
 
 //            response.setHeader("Content-Disposition", "attachment; filename=" +
@@ -112,7 +116,7 @@ public class ReadMailHandler extends HttpServlet {
             sos.flush();
             sos.close();
         } catch (Exception ex) {
-            System.out.println("====== DOWNLOAD exception : " + ex);
+            logger.error("====== DOWNLOAD exception : " + ex);
         } finally {
             // 다운로드후 파일 삭제
             //f.delete();

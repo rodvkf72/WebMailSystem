@@ -4,6 +4,7 @@
  */
 package cse.maven_webmail.control;
 
+import cse.maven_webmail.model.FormParser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.Pop3Agent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,6 +23,8 @@ import cse.maven_webmail.model.Pop3Agent;
  */
 public class LoginHandler extends HttpServlet {
 
+    private static final Logger logger =  LoggerFactory.getLogger(FormParser.class);
+    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -79,7 +84,7 @@ public class LoginHandler extends HttpServlet {
                     break;
             }
         } catch (Exception ex) {
-            System.err.println("LoginCheck - LOGIN error : " + ex);
+            logger.error("LoginCheck - LOGIN error : " + ex);
         } finally {
             out.close();
         }

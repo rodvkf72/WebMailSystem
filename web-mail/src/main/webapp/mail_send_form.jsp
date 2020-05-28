@@ -20,7 +20,7 @@
                 <tr>
                     <td> 수신 </td>
                     <td> <input type="text" name="to" size="80"
-                                value=<%=request.getParameter("recv") == null ? "" : request.getParameter("recv")%>>  </td>
+                                value=<%=request.getParameter("recv") == null ? "" : request.getParameter("recv")%>> </td>
                 </tr>
                 <tr>
                     <td>참조</td>

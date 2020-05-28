@@ -25,6 +25,28 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>로그인 화면</title>
         <link type="text/css" rel="stylesheet" href="css/main_style.css" />
+        
+        <script type="text/javascript">
+    
+        function checkValue()
+        {
+            inputForm = eval("document.loginInfo");
+            if(!inputForm.id.value)
+            {
+                alert("아이디를 입력하세요");    
+                inputForm.id.focus();
+                return false;
+            }
+            if(!inputForm.password.value)
+            {
+                alert("비밀번호를 입력하세요");    
+                inputForm.password.focus();
+                return false;
+            }
+        }
+    
+    </script>
+ 
     </head>
 
     <body>

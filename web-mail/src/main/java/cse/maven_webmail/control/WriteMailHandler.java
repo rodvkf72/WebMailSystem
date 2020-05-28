@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.FormParser;
 import cse.maven_webmail.model.SmtpAgent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,6 +22,8 @@ import cse.maven_webmail.model.SmtpAgent;
  */
 public class WriteMailHandler extends HttpServlet {
 
+    private static final Logger logger =  LoggerFactory.getLogger(FormParser.class);
+    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -84,7 +88,7 @@ public class WriteMailHandler extends HttpServlet {
         agent.setSubj(parser.getSubject());
         agent.setBody(parser.getBody());
         String fileName = parser.getFileName();
-        System.out.println("WriteMailHandler.sendMessage() : fileName = " + fileName);
+        logger.info("WriteMailHandler.sendMessage() : fileName = " + fileName);
         if (fileName != null) {
             agent.setFile1(fileName);
         }
@@ -95,6 +99,7 @@ public class WriteMailHandler extends HttpServlet {
         }
         return status;
     }  // sendMessage()
+    
 
     private String getMailTransportPopUp(boolean success) {
         String alertMessage = null;

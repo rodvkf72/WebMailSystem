@@ -81,4 +81,17 @@ public class MessageFormatter {
 
         return buffer.toString();
     }
+    
+    public String getReplyParam(Message message) {
+        StringBuilder buffer = new StringBuilder();
+
+        MessageParser parser = new MessageParser(message, userid);
+        parser.parse(true);
+
+        buffer.append(parser.getFromAddress()); // to
+        buffer.append(":");
+        buffer.append(parser.getCcAddress()); // cc
+        
+        return buffer.toString();
+    }
 }

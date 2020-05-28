@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 책임: enctype이 multipart/form-data인 HTML 폼에 있는 각 필드와 파일 정보 추출
@@ -19,13 +21,15 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
  */
 public class FormParser {
 
+    private static final Logger logger =  LoggerFactory.getLogger(FormParser.class);
+    
     private HttpServletRequest request;
     private String toAddress = null;
     private String ccAddress = null;
     private String subject = null;
     private String body = null;
     private String fileName = null;
-    private final String uploadTargetDir = "C:/temp/upload";
+    private final String uploadTargetDir = "C:/jsp/upload";
 
     public FormParser(HttpServletRequest request) {
         this.request = request;
@@ -112,7 +116,7 @@ public class FormParser {
                 } else {  // 6. 첨부 파일 처리
                     if (!(fi.getName() == null || fi.getName().equals(""))) {
                         String fieldName = fi.getFieldName();
-                        System.out.println("ATTACHED FILE : " + fieldName + " = " + fi.getName());
+                        logger.info("ATTACHED FILE : " + fieldName + " = " + fi.getName());
 
                         // 절대 경로 저장
                         setFileName(uploadTargetDir + "/" + fi.getName());
@@ -125,7 +129,7 @@ public class FormParser {
                 }
             }
         } catch (Exception ex) {
-            System.out.println("FormParser.parse() : exception = " + ex);
+            logger.error("FormParser.parse() : exception = " + ex);
         }
     }  // parse()
 }

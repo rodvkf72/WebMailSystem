@@ -4,6 +4,7 @@
  */
 package cse.maven_webmail.control;
 
+import cse.maven_webmail.model.FormParser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -12,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.UserAdminAgent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,6 +22,8 @@ import cse.maven_webmail.model.UserAdminAgent;
  */
 public class UserAdminHandler extends HttpServlet {
 
+    private static final Logger logger =  LoggerFactory.getLogger(FormParser.class);
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -28,7 +33,6 @@ public class UserAdminHandler extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
-    
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
@@ -68,7 +72,7 @@ public class UserAdminHandler extends HttpServlet {
                 }
             }
         } catch (Exception ex) {
-            System.err.println(ex.toString());
+            logger.error(ex.toString());
         }
     }
 
@@ -82,23 +86,59 @@ public class UserAdminHandler extends HttpServlet {
             String password = request.getParameter("password");// for test
             //String password = "admin";
             
-            //String useridfilter = XSSFilter.Filter("userid = " + userid + "<br>");
-            //String userpasswordfilter = XSSFilter.Filter("password = " + password + "<br>");
-            out.println(userid);
-            out.println(password);
+            int chkPoint = 0;
+            
+            //String matchPtn = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
+            String matchTestPtn = "^(?=.*[0-9]).{6,20}$"; //개발 시 테스트 간단화를 위해 까다롭지 않은 정규표현식을 사용 
+            
+            String matchNumPtn = "^.{6,20}$";
+            String matchBlankPtn = "^.*\\s.*$";
+            
+            // hjk: 실제 사용시에는 out.println() 부분을 지우기
+            out.println("userid = " + userid + "<br>");
+            out.println("password = " + password + "<br>");
+            
             out.flush();
-            // if (addUser successful)  사용자 등록 성공 팦업창
+            
+            // 비밀번호 유효성 체크 
+            if(password.matches(matchTestPtn)){
+                chkPoint++;
+            }else{
+                out.println(getUserRegistrationFailurePopUp("6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
+            }
+            
+            // 비밀번호 유효성 체크 
+            if(password.matches(matchBlankPtn)){
+                out.println(getUserRegistrationFailurePopUp("공백을 제외하고 입력해주세요."));
+            }else{
+                chkPoint++;
+            }
+            
+            // 비밀번호가 사용자 아이디와 같은지 체크 
+            if(userid.equals(password) || userid == password){
+                out.println(getUserRegistrationFailurePopUp("사용자 아이디와 패스워드가 같을 수 없습니다."));
+            }
+            else{
+                chkPoint++;
+            }
+            
+            
+            // if (addUser successful)  사용자 등록 성공 팝업창
             // else 사용자 등록 실패 팝업창
-            if (agent.addUser(userid, password)) {
-                out.println(getUserRegistrationSuccessPopUp());
-            } else {
-                out.println(getUserRegistrationFailurePopUp());
+            if(chkPoint == 3){
+                if (agent.addUser(userid, password)) {
+                    out.println(getUserRegistrationSuccessPopUp());
+                } else {
+                    out.println(getUserRegistrationFailurePopUp("사용자 등록에 실패하였습니다."));
+            }
+                
             }
             out.flush();
         } catch (Exception ex) {
             out.println("시스템 접속에 실패했습니다.");
         }
     }
+    
 
     private String getUserRegistrationSuccessPopUp() {
         String alertMessage = "사용자 등록이 성공했습니다.";
@@ -121,8 +161,7 @@ public class UserAdminHandler extends HttpServlet {
         return successPopUp.toString();
     }
 
-    private String getUserRegistrationFailurePopUp() {
-        String alertMessage = "사용자 등록이 실패했습니다.";
+    private String getUserRegistrationFailurePopUp(String alertMessage) {
         StringBuilder successPopUp = new StringBuilder();
         successPopUp.append("<html>");
         successPopUp.append("<head>");
@@ -151,7 +190,7 @@ public class UserAdminHandler extends HttpServlet {
             agent.deleteUsers(deleteUserList);
             response.sendRedirect("admin_menu.jsp");
         } catch (Exception ex) {
-            System.out.println(" UserAdminHandler.deleteUser : exception = " + ex);
+            logger.error(" UserAdminHandler.deleteUser : exception = " + ex);
         }
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
