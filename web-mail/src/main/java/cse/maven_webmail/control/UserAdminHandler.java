@@ -82,10 +82,10 @@ public class UserAdminHandler extends HttpServlet {
             String password = request.getParameter("password");// for test
             //String password = "admin";
             
-            String useridfilter = XSSFilter.Filter("userid = " + userid + "<br>");
-            String userpasswordfilter = XSSFilter.Filter("password = " + password + "<br>");
-            out.println(useridfilter);
-            out.println(userpasswordfilter);
+            //String useridfilter = XSSFilter.Filter("userid = " + userid + "<br>");
+            //String userpasswordfilter = XSSFilter.Filter("password = " + password + "<br>");
+            out.println(userid);
+            out.println(password);
             out.flush();
             // if (addUser successful)  사용자 등록 성공 팦업창
             // else 사용자 등록 실패 팝업창
