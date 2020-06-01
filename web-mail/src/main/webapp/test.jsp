@@ -32,7 +32,7 @@
 
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
-                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mail?serverTimezone=UTC", "root", "1463");
+                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?serverTimezone=UTC", "root", "3456");
 
                     if (conn == null) {
                         throw new Exception("DB Connect Fail");

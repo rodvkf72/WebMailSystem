@@ -4,6 +4,7 @@
  */
 package cse.maven_webmail.control;
 
+import cse.maven_webmail.model.FormParser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -12,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.UserAdminAgent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -28,6 +31,8 @@ public class UserAdminHandler extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      */
+    
+    private static final Logger logger =  LoggerFactory.getLogger(UserAdminHandler.class);
     
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -68,7 +73,7 @@ public class UserAdminHandler extends HttpServlet {
                 }
             }
         } catch (Exception ex) {
-            System.err.println(ex.toString());
+            logger.error(ex.toString());
         }
     }
 
@@ -84,16 +89,50 @@ public class UserAdminHandler extends HttpServlet {
             
             //String useridfilter = XSSFilter.Filter("userid = " + userid + "<br>");
             //String userpasswordfilter = XSSFilter.Filter("password = " + password + "<br>");
-            out.println(userid);
-            out.println(password);
+            
+            //String matchPtn = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
+            String matchTestPtn = "^(?=.*[0-9]).{6,20}$"; //개발 시 테스트 간단화를 위해 까다롭지 않은 정규표현식을 사용 
+            
+            String matchBlankPtn = "^.*\\s.*$";
+            String matchUseridPtn = "^.*"+userid+".*$";
+            
+            // hjk: 실제 사용시에는 out.println() 부분을 지우기
+            out.println("userid = " + userid + "<br>");
+            out.println("password = " + password + "<br>");
+            
             out.flush();
-            // if (addUser successful)  사용자 등록 성공 팦업창
+            
+            
+            //id 유효성 체크
+            if(userid.equals("")){
+                out.println(getUserRegistrationFailurePopUp("아이디를 입력해주세요."));
+                return;
+            }
+            
+            // 비밀번호 유효성 체크 
+            if(!(password.matches(matchTestPtn))){
+                out.println(getUserRegistrationFailurePopUp("숫자를 포함한 6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
+                return;
+            }
+            
+            if(password.matches(matchUseridPtn)){
+                out.println(getUserRegistrationFailurePopUp("아이디를 패스워드에 넣을 수 없습니다."));
+                return;
+            }
+            
+            if(password.matches(matchBlankPtn)){
+                out.println(getUserRegistrationFailurePopUp("공백을 제외하고 입력해주세요."));
+                return;
+            }
+            
+            // if (addUser successful)  사용자 등록 성공 팝업창
             // else 사용자 등록 실패 팝업창
             if (agent.addUser(userid, password)) {
                 out.println(getUserRegistrationSuccessPopUp());
             } else {
-                out.println(getUserRegistrationFailurePopUp());
+                out.println(getUserRegistrationFailurePopUp("사용자 등록에 실패하였습니다."));
             }
+            
             out.flush();
         } catch (Exception ex) {
             out.println("시스템 접속에 실패했습니다.");
@@ -121,8 +160,7 @@ public class UserAdminHandler extends HttpServlet {
         return successPopUp.toString();
     }
 
-    private String getUserRegistrationFailurePopUp() {
-        String alertMessage = "사용자 등록이 실패했습니다.";
+    private String getUserRegistrationFailurePopUp(String alertMessage) {
         StringBuilder successPopUp = new StringBuilder();
         successPopUp.append("<html>");
         successPopUp.append("<head>");
@@ -142,6 +180,7 @@ public class UserAdminHandler extends HttpServlet {
         return successPopUp.toString();
     }
 
+    
     private void deleteUser(HttpServletRequest request, HttpServletResponse response, PrintWriter out) {
         String server = "127.0.0.1";
         int port = 4555;
@@ -151,7 +190,7 @@ public class UserAdminHandler extends HttpServlet {
             agent.deleteUsers(deleteUserList);
             response.sendRedirect("admin_menu.jsp");
         } catch (Exception ex) {
-            System.out.println(" UserAdminHandler.deleteUser : exception = " + ex);
+            logger.error(" UserAdminHandler.deleteUser : exception = " + ex);
         }
     }
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

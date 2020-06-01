@@ -8,7 +8,6 @@
 <!DOCTYPE html>
 
 <jsp:useBean id="pop3" scope="page" class="cse.maven_webmail.model.Pop3Agent" />
-<jsp:useBean id="reply" scope="page" class="cse.maven_webmail.model.ReplyBean"/>
 <%
             pop3.setHost((String) session.getAttribute("host"));
             pop3.setUserid((String) session.getAttribute("userid"));
@@ -31,11 +30,6 @@
 
         <div id="msgBody">
             <%= pop3.getMessage(Integer.parseInt((String) request.getParameter("msgid")))%>
-            <% String tmp = pop3.getReply(Integer.parseInt((String) request.getParameter("msgid"))); 
-               reply.parseUrl(tmp);
-            %>
-            <br/><br/>
-            <input type="button" onclick="location.href='<%=reply.getUrl()%>';" value="답장하기"/>
         </div>
 
 

@@ -12,6 +12,8 @@ import javax.mail.Message;
 import javax.mail.Multipart;
 import javax.mail.Part;
 import javax.mail.internet.MimeUtility;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,6 +32,8 @@ public class MessageParser {
     private final String downloadTempDir = "C:/temp/download/";
     private String userid;
 
+    private static final Logger logger =  LoggerFactory.getLogger(MessageParser.class);
+    
     public MessageParser(Message message, String userid) {
         this.message = message;
         this.userid = userid;
@@ -47,7 +51,7 @@ public class MessageParser {
             //  예외가 발생하지 않았으므로 정상적으로 동작하였음.
             status = true;
         } catch (Exception ex) {
-            System.out.println("MessageParser.parse() - Exception : " + ex);
+            logger.error("MessageParser.parse() - Exception : " + ex);
             status = false;
         } finally {
             return status;
@@ -78,7 +82,7 @@ public class MessageParser {
             fileName = MimeUtility.decodeText(p.getFileName());
 //            fileName = fileName.replaceAll(" ", "%20");
             if (fileName != null) {
-                System.out.println("MessageParser.getPart() : file = " + fileName);
+                logger.info("MessageParser.getPart() : file = " + fileName);
                 // 첨부 파일을 서버의 내려받기 임시 저장소에 저장
                 String tempUserDir = this.downloadTempDir + this.userid;
                 File dir = new File(tempUserDir);
@@ -121,18 +125,20 @@ public class MessageParser {
     }
 
     private void printMessage(boolean printBody) {
-        System.out.println("From: " + fromAddress);
-        System.out.println("To: " + toAddress);
-        System.out.println("CC: " + ccAddress);
-        System.out.println("Date: " + sentDate);
-        System.out.println("Subject: " + subject);
+        // 메일 전문을 로그로 출력하는건 보안성 문제가 있음
+        // 프로젝트 제출시에는 없애야 합니다. 
+        logger.trace("From: " + fromAddress);
+        logger.trace("To: " + toAddress);
+        logger.trace("CC: " + ccAddress);
+        logger.trace("Date: " + sentDate);
+        logger.trace("Subject: " + subject);
 
         if (printBody) {
-            System.out.println("본 문");
-            System.out.println("---------------------------------");
-            System.out.println(body);
-            System.out.println("---------------------------------");
-            System.out.println("첨부파일: " + fileName);
+            logger.trace("본 문");
+            logger.trace("---------------------------------");
+            logger.trace(body);
+            logger.trace("---------------------------------");
+            logger.trace("첨부파일: " + fileName);
         }
     }
 

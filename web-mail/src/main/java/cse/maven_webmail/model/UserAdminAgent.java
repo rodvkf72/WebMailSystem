@@ -13,6 +13,8 @@ import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,8 +34,10 @@ public class UserAdminAgent {
     private final String EOL = "\r\n";
     String cwd;
 
+    private static final Logger logger =  LoggerFactory.getLogger(UserAdminAgent.class);
+    
     public UserAdminAgent(String server, int port, String cwd) throws Exception {
-        System.out.println("UserAdminAgent created: server = " + server + ", port = " + port);
+        logger.info("UserAdminAgent created: server = " + server + ", port = " + port);
         this.server = server;  // 127.0.0.1
         this.port = port;  // 4555
         this.cwd = cwd;
@@ -51,7 +55,7 @@ public class UserAdminAgent {
         Properties props = new Properties();
         String propertyFile =  this.cwd + "/WEB-INF/classes/config/system.properties";
         propertyFile = propertyFile.replace("\\", "/");
-        System.out.printf("prop path = %s%n", propertyFile);
+        logger.info("prop path = %s%n", propertyFile);
         
         try (BufferedInputStream bis = 
                 new BufferedInputStream(
@@ -60,9 +64,9 @@ public class UserAdminAgent {
             ROOT_ID = props.getProperty("root_id");
             ROOT_PASSWORD = props.getProperty("root_password");
             ADMIN_ID = props.getProperty("admin_id");
-            System.out.printf("ROOT_ID = %s\nROOT_PASS = %s\n", ROOT_ID, ROOT_PASSWORD);
+            logger.info("ROOT_ID = %s\nROOT_PASS = %s\n", ROOT_ID, ROOT_PASSWORD);
         } catch (IOException ioe) {
-            System.out.println("UserAdminAgent: 초기화 실패 - " + ioe.getMessage());
+            logger.error("UserAdminAgent: 초기화 실패 - " + ioe.getMessage());
         }
         
     }
@@ -74,7 +78,7 @@ public class UserAdminAgent {
         boolean status = false;
         byte[] messageBuffer = new byte[1024];
 
-        System.out.println("addUser() called");
+        logger.debug("addUser() called");
         if (!isConnected) {
             return status;
         }
@@ -89,7 +93,7 @@ public class UserAdminAgent {
             //if (is.available() > 0) {
             is.read(messageBuffer);
             String recvMessage = new String(messageBuffer);
-            System.out.println(recvMessage);
+           logger.debug(recvMessage);
             //}
             // 3: 기존 메일사용자 여부 확인
             if (recvMessage.contains("added")) {
@@ -102,7 +106,7 @@ public class UserAdminAgent {
             System.out.flush();  // for test
             socket.close();
         } catch (Exception ex) {
-            System.out.println(ex.toString());
+            logger.error(ex.toString());
             status = false;
         } finally {
             // 5: 상태 반환
@@ -129,12 +133,12 @@ public class UserAdminAgent {
 
             // 3: 응답 메시지 처리
             String recvMessage = new String(messageBuffer);
-            System.out.println(recvMessage);
+            logger.info(recvMessage);
             userList = parseUserList(recvMessage);
 
             quit();
         } catch (Exception ex) {
-            System.err.println(ex);
+            logger.error(ex.toString());
         } finally {
             return userList;
         }
@@ -178,7 +182,7 @@ public class UserAdminAgent {
                 // 1: "deluser" 명령 송신
                 command = "deluser " + userId + EOL;
                 os.write(command.getBytes());
-                System.out.println(command);
+                logger.debug(command);
 
                 // 2: 응답 메시지 수신
                 java.util.Arrays.fill(messageBuffer, (byte) 0);
@@ -186,14 +190,14 @@ public class UserAdminAgent {
 
                 // 3: 응답 메시지 분석
                 recvMessage = new String(messageBuffer);
-                System.out.println(recvMessage);
+                logger.info(recvMessage);
                 if (recvMessage.contains("deleted")) {
                     status = true;
                 }
             }
             quit();
         } catch (Exception ex) {
-            System.err.println(ex);
+            logger.error(ex.toString());
         } finally {
             return status;
         }
@@ -229,13 +233,13 @@ public class UserAdminAgent {
         boolean returnVal = false;
         String sendMessage;
 
-        System.out.println("UserAdminAgent.connect() called...");
+        logger.info("UserAdminAgent.connect() called...");
 
         // root 인증: id, passwd - default: root
         // 1: Login Id message 수신
         is.read(messageBuffer);
         String recvMessage = new String(messageBuffer);
-        System.out.println(recvMessage);
+        logger.debug(recvMessage);
 
         // 2: rootId 송신
         sendMessage = ROOT_ID + EOL;
@@ -245,7 +249,7 @@ public class UserAdminAgent {
         java.util.Arrays.fill(messageBuffer, (byte) 0);
         is.read(messageBuffer);
         recvMessage = new String(messageBuffer);
-        System.out.println(recvMessage);
+        logger.debug(recvMessage);
 
         // 4: rootPassword 송신
         sendMessage = ROOT_PASSWORD + EOL;
@@ -256,7 +260,7 @@ public class UserAdminAgent {
         // if (is.available() > 0) {
         is.read(messageBuffer);
         recvMessage = new String(messageBuffer);
-        System.out.println(recvMessage);
+        logger.debug(recvMessage);
 
         if (recvMessage.contains("Welcome")) {
             returnVal = true;
@@ -280,14 +284,14 @@ public class UserAdminAgent {
             is.read(messageBuffer);
             // 3: 메시지 분석
             String recvMessage = new String(messageBuffer);
-            System.out.println(recvMessage);
+            logger.debug(recvMessage);
             if (recvMessage.contains("closed")) {
                 status = true;
             } else {
                 status = false;
             }
         } catch (IOException ex) {
-            System.err.println("UserAdminAgent.quit() " + ex);
+            logger.error("UserAdminAgent.quit() " + ex);
         } finally {
             return status;
         }

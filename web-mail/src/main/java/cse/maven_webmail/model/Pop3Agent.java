@@ -12,6 +12,8 @@ import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Store;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,6 +29,8 @@ public class Pop3Agent {
 
     private String exceptionType;
 
+    private static final Logger logger =  LoggerFactory.getLogger(Pop3Agent.class);
+    
     public Pop3Agent() {
     }
 
@@ -43,7 +47,7 @@ public class Pop3Agent {
             status = connectToStore();
             store.close();
         } catch (Exception ex) {
-            System.out.println("Pop3Agent.validate() error : " + ex);
+            logger.error("Pop3Agent.validate() error : " + ex);
             status = false;  // for clarity
         } finally {
             return status;
@@ -74,7 +78,7 @@ public class Pop3Agent {
             store.close();
             status = true;
         } catch (Exception ex) {
-            System.out.println("deleteMessage() error: " + ex);
+            logger.error("deleteMessage() error: " + ex);
         } finally {
             return status;
         }
@@ -88,7 +92,7 @@ public class Pop3Agent {
         Message[] messages = null;
 
         if (!connectToStore()) {  // 3.1
-            System.err.println("POP3 connection failed!");
+            logger.warn("POP3 connection failed!");
             return "POP3 연결이 되지 않아 메일 목록을 볼 수 없습니다.";
         }
 
@@ -110,7 +114,7 @@ public class Pop3Agent {
             folder.close(true);  // 3.7
             store.close();       // 3.8
         } catch (Exception ex) {
-            System.out.println("Pop3Agent.getMessageList() : exception = " + ex);
+            logger.error("Pop3Agent.getMessageList() : exception = " + ex);
             result = "Pop3Agent.getMessageList() : exception = " + ex;
         } finally {
             return result;
@@ -121,7 +125,7 @@ public class Pop3Agent {
         String result = "POP3  서버 연결이 되지 않아 메시지를 볼 수 없습니다.";
 
         if (!connectToStore()) {
-            System.err.println("POP3 connection failed!");
+            logger.warn("POP3 connection failed!");
             return result;
         }
 
@@ -137,13 +141,40 @@ public class Pop3Agent {
             folder.close(true);
             store.close();
         } catch (Exception ex) {
-            System.out.println("Pop3Agent.getMessageList() : exception = " + ex);
+            logger.error("Pop3Agent.getMessageList() : exception = " + ex);
             result = "Pop3Agent.getMessage() : exception = " + ex;
         } finally {
             return result;
         }
     }
 
+    public String getReply(int n) {
+        String result = "POP3  서버 연결이 되지 않아 메시지를 볼 수 없습니다.";
+
+        if (!connectToStore()) {
+            logger.warn("POP3 connection failed!");
+            return result;
+        }
+
+        try {
+            Folder folder = store.getFolder("INBOX");
+            folder.open(Folder.READ_ONLY);
+
+            Message message = folder.getMessage(n);
+
+            MessageFormatter formatter = new MessageFormatter(userid);
+            result = formatter.getReplyParam(message);
+
+            folder.close(true);
+            store.close();
+        } catch (Exception ex) {
+            logger.error("Pop3Agent.getMessageList() : exception = " + ex);
+            result = "Pop3Agent.getMessage() : exception = " + ex;
+        } finally {
+            return result;
+        }
+    }
+    
     private boolean connectToStore() {
         boolean status = false;
         Properties props = System.getProperties();
