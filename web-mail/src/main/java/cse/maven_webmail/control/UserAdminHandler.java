@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.UserAdminAgent;
+import java.util.LinkedList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,8 +93,8 @@ public class UserAdminHandler extends HttpServlet {
             //String matchPtn = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
             String matchTestPtn = "^(?=.*[0-9]).{6,20}$"; //개발 시 테스트 간단화를 위해 까다롭지 않은 정규표현식을 사용 
             
-            String matchNumPtn = "^.{6,20}$";
             String matchBlankPtn = "^.*\\s.*$";
+            String matchUseridPtn = "^.*"+userid+".*$";
             
             // hjk: 실제 사용시에는 out.println() 부분을 지우기
             out.println("userid = " + userid + "<br>");
@@ -100,39 +102,38 @@ public class UserAdminHandler extends HttpServlet {
             
             out.flush();
             
-            // 비밀번호 유효성 체크 
-            if(password.matches(matchTestPtn)){
-                chkPoint++;
-            }else{
-                out.println(getUserRegistrationFailurePopUp("6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
+            
+            //id 유효성 체크
+            if(userid.equals("")){
+                out.println(getUserRegistrationFailurePopUp("아이디를 입력해주세요."));
+                return;
             }
             
             // 비밀번호 유효성 체크 
+            if(!(password.matches(matchTestPtn))){
+                out.println(getUserRegistrationFailurePopUp("숫자를 포함한 6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
+                return;
+            }
+            
+            if(password.matches(matchUseridPtn)){
+                out.println(getUserRegistrationFailurePopUp("아이디를 패스워드에 넣을 수 없습니다."));
+                return;
+            }
+            
             if(password.matches(matchBlankPtn)){
                 out.println(getUserRegistrationFailurePopUp("공백을 제외하고 입력해주세요."));
-            }else{
-                chkPoint++;
+                return;
             }
-            
-            // 비밀번호가 사용자 아이디와 같은지 체크 
-            if(userid.equals(password) || userid == password){
-                out.println(getUserRegistrationFailurePopUp("사용자 아이디와 패스워드가 같을 수 없습니다."));
-            }
-            else{
-                chkPoint++;
-            }
-            
             
             // if (addUser successful)  사용자 등록 성공 팝업창
             // else 사용자 등록 실패 팝업창
-            if(chkPoint == 3){
-                if (agent.addUser(userid, password)) {
-                    out.println(getUserRegistrationSuccessPopUp());
-                } else {
-                    out.println(getUserRegistrationFailurePopUp("사용자 등록에 실패하였습니다."));
+            if (agent.addUser(userid, password)) {
+                out.println(getUserRegistrationSuccessPopUp());
+            } else {
+                out.println(getUserRegistrationFailurePopUp("사용자 등록에 실패하였습니다."));
             }
-                
-            }
+            
+            
             out.flush();
         } catch (Exception ex) {
             out.println("시스템 접속에 실패했습니다.");
