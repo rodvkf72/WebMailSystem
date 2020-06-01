@@ -34,7 +34,7 @@
                     <tr>
                         <td> 수신 </td>
                         <td> <input type="text" name="to" size="80" required
-                                    value=<%=request.getParameter("to") == null ? "" : request.getParameter("to")%>>  </td>
+                                    value=<%=request.getParameter("userid") == null ? "" : request.getParameter("userid")%>>  </td>
                         <!--
                         -- 기존에 "to" 말고 "recv" 라고 적혀 있었는데 왜 있었는지 모르겠음
                         -- 요청값을 받는 부분이라 수정해도 전송하는데 이상 없을거라 생각하고 바꾸고 테스트 한 결과 이상 없음
