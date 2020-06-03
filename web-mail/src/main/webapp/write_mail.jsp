@@ -36,6 +36,7 @@
                         <td> <input type="text" name="to" size="80" required
                                     value=<%=request.getParameter("userid") == null ? "" : request.getParameter("userid")%>>  </td>
                         <!--
+                        -- 이거 userid로 하니까 임시보관함 수정 기능에 null값 들어가요..
                         -- 기존에 "to" 말고 "recv" 라고 적혀 있었는데 왜 있었는지 모르겠음
                         -- 요청값을 받는 부분이라 수정해도 전송하는데 이상 없을거라 생각하고 바꾸고 테스트 한 결과 이상 없음
                         -->

@@ -4,7 +4,6 @@
  */
 package cse.maven_webmail.control;
 
-import cse.maven_webmail.model.FormParser;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.RequestDispatcher;

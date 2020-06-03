@@ -7,7 +7,7 @@ package cse.maven_webmail.model;
 
 /**
  *
- * @author unsky
+ * @author 김희정
  */
 public class ReplyBean {
     private String fromValue;

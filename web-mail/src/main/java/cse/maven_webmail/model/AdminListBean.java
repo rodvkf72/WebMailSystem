@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  *
- * @author unsky
+ * @author 김희정
  */
 public class AdminListBean {
     String server;

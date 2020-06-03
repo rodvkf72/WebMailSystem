@@ -24,17 +24,40 @@
                 </p>
                 <p>
                     <strong>비&nbsp;&nbsp;밀&nbsp;&nbsp;번&nbsp;&nbsp;호 : </strong>
-                    <input type="password" name="password" placeholder="비밀번호 입력">
+                    <input type="password" name="password" placeholder="비밀번호 입력" id="pwd" onchange="SameCheck()">
                 </p>
-                <!-- <p>
+                <p>
                     <strong>비밀번호 확인 : </strong>
-                    <input type="password" name="re_pass" placeholder="비밀번호 재입력">
-                </p> -->
+                    <input type="password" placeholder="비밀번호 재입력" id="re_pwd" onchange="SameCheck()">
+                    <br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="same"></span>
+                </p>
                 <br/>
                 <input type="submit" value="회원가입" name="register">&nbsp;&nbsp;&nbsp;&nbsp;
                 <input type="reset" value="다시 입력" name="re_input">&nbsp;&nbsp;&nbsp;&nbsp;
-                <input type="button" value="취소" name="cancel" onclick="location='index.jsp'">
+                <input type="button" value="취소" name="cancel" onclick="location = 'index.jsp'">
             </form>
+
+            <script type="text/javascript">
+                function SameCheck(){
+                    var pwd = document.getElementById("pwd").value;
+                    var re_pwd = document.getElementById("re_pwd").value;
+                
+                    if ((pwd != '') && (re_pwd != '')){
+                        if (pwd == re_pwd){
+                            document.getElementById("same").innerHTML="비밀번호가 일치합니다.";
+                            document.getElementById("same").style.color="blue";
+                            return true;
+                        } else {
+                            document.getElementById("same").innerHTML="비밀번호가 일치하지 않습니다.";
+                            document.getElementById("same").style.color="red";
+                            return false;
+                        }
+                    } else {
+                        return false;
+                    }                   
+                }
+            </script>
         </div>
         <%@include file="footer.jspf"%>
     </body>
