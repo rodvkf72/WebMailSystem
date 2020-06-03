@@ -30,7 +30,7 @@
                     <strong>비밀번호 확인 : </strong>
                     <input type="password" name="re_pass" placeholder="비밀번호 재입력" id="re_pwd" onchange="SameCheck()">
                     <br>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="same">ddd</span>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="same"></span>
                 </p>
                 <br/>
                 <input type="submit" value="회원가입" name="register">&nbsp;&nbsp;&nbsp;&nbsp;
