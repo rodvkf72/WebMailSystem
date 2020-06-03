@@ -55,7 +55,7 @@ public class UserAdminAgent {
         Properties props = new Properties();
         String propertyFile =  this.cwd + "/WEB-INF/classes/config/system.properties";
         propertyFile = propertyFile.replace("\\", "/");
-        logger.info("prop path = %s%n", propertyFile);
+        logger.info("prop path =" + propertyFile);
         
         try (BufferedInputStream bis = 
                 new BufferedInputStream(

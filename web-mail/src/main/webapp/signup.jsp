@@ -20,7 +20,7 @@
                   method="POST">
                 <p>
                     <strong>사&nbsp;&nbsp;&nbsp;&nbsp;용&nbsp;&nbsp;&nbsp;&nbsp;자 : </strong>
-                    <input type=""text" name="id" placeholder="사용자 입력">
+                    <input type=""text" name="id" placeholder="사용자 입력" >
                 </p>
                 <p>
                     <strong>비&nbsp;&nbsp;밀&nbsp;&nbsp;번&nbsp;&nbsp;호 : </strong>

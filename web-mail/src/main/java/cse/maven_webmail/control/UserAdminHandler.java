@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.UserAdminAgent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,17 +93,17 @@ public class UserAdminHandler extends HttpServlet {
             //String userpasswordfilter = XSSFilter.Filter("password = " + password + "<br>");
             
             //String matchPtn = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
+            String matchId = "^[a-zA-Z0-9]*$"; 
+            String matchBlacket = "^\\(\\)\\{\\}\\[\\]$";
             String matchTestPtn = "^(?=.*[0-9]).{6,20}$"; //개발 시 테스트 간단화를 위해 까다롭지 않은 정규표현식을 사용 
             
             String matchBlankPtn = "^.*\\s.*$";
-            String matchUseridPtn = "^.*"+userid+".*$";
+            
+            boolean regex = false;
             
             // hjk: 실제 사용시에는 out.println() 부분을 지우기
-            out.println("userid = " + userid + "<br>");
-            out.println("password = " + password + "<br>");
-            
-            out.flush();
-            
+            logger.info("userid = " + userid);
+            logger.info("password = " + password);
             
             //id 유효성 체크
             if(userid.equals("")){
@@ -109,19 +111,39 @@ public class UserAdminHandler extends HttpServlet {
                 return;
             }
             
+            regex = Pattern.matches(matchId, userid);
+
+            if(!regex){
+                out.println(getUserRegistrationFailurePopUp("id에 영문과 숫자만을 사용해주세요."));
+                return;
+            }
+            
+            if(userid.length() <5 || userid.length() > 20){
+                out.println(getUserRegistrationFailurePopUp("4자 이상 20자 이하의 아이디를 입력해주세요."));
+                return;
+            }
+            
             // 비밀번호 유효성 체크 
-            if(!(password.matches(matchTestPtn))){
+            regex = Pattern.matches(matchTestPtn, password);
+            if(!regex){
                 out.println(getUserRegistrationFailurePopUp("숫자를 포함한 6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
                 return;
             }
             
-            if(password.matches(matchUseridPtn)){
+            if(password.contains(userid)){
                 out.println(getUserRegistrationFailurePopUp("아이디를 패스워드에 넣을 수 없습니다."));
                 return;
             }
             
-            if(password.matches(matchBlankPtn)){
+            regex = Pattern.matches(matchBlankPtn, password);
+            if(regex){
                 out.println(getUserRegistrationFailurePopUp("공백을 제외하고 입력해주세요."));
+                return;
+            }
+            
+            if(password.contains("(") || password.contains(")") ||password.contains("[") || password.contains("]")
+                    || password.contains("{") || password.contains("}") || password.contains("<") || password.contains(">")){
+                out.println(getUserRegistrationFailurePopUp("사용할 수 없는 문자가 포함되어 있습니다.."));
                 return;
             }
             
@@ -135,6 +157,7 @@ public class UserAdminHandler extends HttpServlet {
             
             out.flush();
         } catch (Exception ex) {
+            logger.error(ex.toString());
             out.println("시스템 접속에 실패했습니다.");
         }
     }
