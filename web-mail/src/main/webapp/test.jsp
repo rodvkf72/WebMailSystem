@@ -1,6 +1,7 @@
 <%-- 
-    Document   : main_menu.jsp
-    Author     : jongmin
+    Document   : test
+    Created on : 2020. 5. 11., 오후 3:20:59
+    Author     : 김광호
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -32,8 +33,8 @@
 
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
-                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/project?serverTimezone=UTC", "root", "3456");
-
+                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mail?serverTimezone=UTC", "root", "1463");
+                    //이건 개인 디비에 맞게 쓸 때 수정하셔야 합니다.
                     if (conn == null) {
                         throw new Exception("DB Connect Fail");
                     }

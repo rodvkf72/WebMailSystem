@@ -17,7 +17,7 @@
         <%@include file="header.jspf"%>
         <div id="login_form">
             <form name="AddUser" action="UserAdmin.do?menu=<%= CommandType.ADD_USER_COMMAND%>"
-                  method="POST" onsubmit="return SameCheck()">
+                  method="POST">
                 <p>
                     <strong>사&nbsp;&nbsp;&nbsp;&nbsp;용&nbsp;&nbsp;&nbsp;&nbsp;자 : </strong>
                     <input type=""text" name="id" placeholder="사용자 입력">
@@ -28,7 +28,7 @@
                 </p>
                 <p>
                     <strong>비밀번호 확인 : </strong>
-                    <input type="password" name="re_pass" placeholder="비밀번호 재입력" id="re_pwd" onchange="SameCheck()">
+                    <input type="password" placeholder="비밀번호 재입력" id="re_pwd" onchange="SameCheck()">
                     <br>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="same"></span>
                 </p>
