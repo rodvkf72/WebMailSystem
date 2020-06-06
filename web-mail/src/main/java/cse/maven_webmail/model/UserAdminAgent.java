@@ -55,7 +55,7 @@ public class UserAdminAgent {
         Properties props = new Properties();
         String propertyFile =  this.cwd + "/WEB-INF/classes/config/system.properties";
         propertyFile = propertyFile.replace("\\", "/");
-        logger.info("prop path = %s%n", propertyFile);
+        logger.info("prop path =" + propertyFile);
         
         try (BufferedInputStream bis = 
                 new BufferedInputStream(
@@ -64,7 +64,7 @@ public class UserAdminAgent {
             ROOT_ID = props.getProperty("root_id");
             ROOT_PASSWORD = props.getProperty("root_password");
             ADMIN_ID = props.getProperty("admin_id");
-            logger.info("ROOT_ID = %s\nROOT_PASS = %s\n", ROOT_ID, ROOT_PASSWORD);
+            logger.info("ROOT_ID = " + ROOT_ID + "\nROOT_PASS = " + ROOT_PASSWORD + "\n");
         } catch (IOException ioe) {
             logger.error("UserAdminAgent: 초기화 실패 - " + ioe.getMessage());
         }

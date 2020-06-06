@@ -5,6 +5,8 @@
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="cse.maven_webmail.model.UserAdminAgent"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<jsp:useBean id="menuagent" scope="page" class="cse.maven_webmail.model.AdminListBean"/>
 
 <!DOCTYPE html>
 
@@ -13,6 +15,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>사용자 관리 메뉴</title>
         <link type="text/css" rel="stylesheet" href="css/main_style.css" />
+        
     </head>
     <body>
         <jsp:include page="header.jsp" />
@@ -20,21 +23,21 @@
         <div id="sidebar">
             <jsp:include page="sidebar_admin_menu.jsp" />
         </div>
-
+        <%
+            String cwd =  this.getServletContext().getRealPath(".");
+        %>
+        <jsp:setProperty name="menuagent" property="cwd" value="<%=cwd%>"/>
+        <jsp:setProperty name="menuagent" property="server" value="localhost"/>
+        <jsp:setProperty name="menuagent" property="port" value="4555"/>
+        
         <div id="main">
             <h2> 메일 사용자 목록 </h2>
             <!-- 아래 코드는 위와 같이 Java Beans와 JSTL을 이용하는 코드로 바꾸어져야 함 -->
-            
-            <%
-                        String cwd =  this.getServletContext().getRealPath(".");
-                        UserAdminAgent agent = new UserAdminAgent("localhost", 4555, cwd);
-            %>
+            <%menuagent.setUserListinAgent();%>
             <ul>
-                <%
-                            for (String userId : agent.getUserList()) {
-                                out.println("<li>" + userId + "</li>");
-                            }
-                %>
+                <c:forEach var="userId" items="${menuagent.userList}">
+                    <li><c:out value="${userId}"/></li>
+                </c:forEach>
             </ul>
         </div>
 

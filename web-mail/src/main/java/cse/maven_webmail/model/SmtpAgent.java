@@ -38,7 +38,7 @@ public class SmtpAgent {
     protected String body = null;
     protected String file1 = null;
 
-    private static final Logger logger =  LoggerFactory.getLogger(FormParser.class);
+    private static final Logger logger =  LoggerFactory.getLogger(SmtpAgent.class);
     
     public SmtpAgent(String host, String userid) {
         this.host = host;
