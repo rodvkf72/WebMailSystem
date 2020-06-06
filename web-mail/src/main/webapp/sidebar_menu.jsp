@@ -21,7 +21,7 @@
         <p> <a href="test.jsp"> 임시 보관함 </a> </p>
         <p> <a href="main_menu.jsp"> 메일 읽기 </a> </p>
         <p> <a href="write_mail.jsp"> 메일 쓰기 </a> </p>
-        <p> <a href="write_mail.jsp?userid=<%=session.getAttribute("userid")%>"> 내게 쓰기 </a> </p>
+        <p> <a href="write_mail.jsp?to=<%=session.getAttribute("userid")%>"> 내게 쓰기 </a> </p>
         <p><a href="Login.do?menu=<%= CommandType.LOGOUT %>">로그아웃</a></p>
     </body>
 </html>

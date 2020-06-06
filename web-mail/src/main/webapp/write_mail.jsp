@@ -32,7 +32,7 @@
                   action="WriteMail.do?menu=<%= CommandType.SEND_MAIL_COMMAND%>">
                 <table>
                     <tr>
-                        <input type="text" name="number" value=<%=request.getParameter("number") == null ? "" : request.getParameter("number")%> hidden>
+                        <input type="text" name="number" value="<%=request.getParameter("number") == null ? "" : request.getParameter("number")%>" hidden>
                         <td> 수신 </td>
                         <td> <input type="text" name="to" size="80" required
                                     value=<%=request.getParameter("to") == null ? "" : request.getParameter("to")%>>  </td>
