@@ -32,9 +32,10 @@
                   action="WriteMail.do?menu=<%= CommandType.SEND_MAIL_COMMAND%>">
                 <table>
                     <tr>
+                        <input type="text" name="number" value=<%=request.getParameter("number") == null ? "" : request.getParameter("number")%> hidden>
                         <td> 수신 </td>
                         <td> <input type="text" name="to" size="80" required
-                                    value=<%=request.getParameter("userid") == null ? "" : request.getParameter("userid")%>>  </td>
+                                    value=<%=request.getParameter("to") == null ? "" : request.getParameter("to")%>>  </td>
                         <!--
                         -- 이거 userid로 하니까 임시보관함 수정 기능에 null값 들어가요..
                         -- 기존에 "to" 말고 "recv" 라고 적혀 있었는데 왜 있었는지 모르겠음
@@ -55,10 +56,12 @@
                     <tr>  <%-- TextArea    --%>
                         <td colspan="2">  <textarea rows="15" name="body" cols="80"><%=request.getParameter("text") == null ? "" : request.getParameter("text")%></textarea> </td>
                     </tr>
+                    
                     <tr>
                         <td>첨부 파일</td>
                         <td> <input type="file" name="file1"  size="80">  </td>
                     </tr>
+                    <input type="text" name="temp" value="<%=request.getParameter("temporary") == null ? "" : request.getParameter("temporary")%>" hidden>
                     <tr>
                         <td colspan="2">
                             <input name="sbt" type="submit" value="메일 보내기" onclick="submitForm();">
@@ -69,7 +72,6 @@
             </form>
 
             <iframe name='ifrm' width='0' height='0' frameborder='0'></iframe>   
-
             <script type="text/javascript">
                 function f_submit() {
                     /*

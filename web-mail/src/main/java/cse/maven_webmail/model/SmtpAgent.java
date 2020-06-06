@@ -6,11 +6,14 @@ package cse.maven_webmail.model;
 
 import com.sun.mail.smtp.SMTPMessage;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
+import java.util.logging.Level;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -97,6 +100,42 @@ public class SmtpAgent {
     public void setFile1(String file1) {
         this.file1 = file1;
     }
+    
+    public class Inner implements Runnable{
+        String file1;
+        Multipart mp;
+
+        public Inner(String file1, Multipart mp){
+            this.file1 = file1;
+            this.mp = mp;
+        }
+        public void run(){
+            if (this.file1 != null) {
+                MimeBodyPart a1 = new MimeBodyPart();
+                DataSource src = new FileDataSource(this.file1);
+                try {
+                    a1.setDataHandler(new DataHandler(src));
+                } catch (MessagingException ex) {
+                    java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                int index = this.file1.lastIndexOf('/');
+                String fileName = this.file1.substring(index + 1);
+                try {
+                    // "B": base64, "Q": quoted-printable
+                    a1.setFileName(MimeUtility.encodeText(fileName, "UTF-8", "B"));
+                } catch (UnsupportedEncodingException ex) {
+                    java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (MessagingException ex) {
+                    java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                try {
+                    mp.addBodyPart(a1);
+                } catch (MessagingException ex) {
+                    java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
 
     // LJM 100418 -  현재 로그인한 사용자의 이메일 주소를 반영하도록 수정되어야 함. - test only
     // LJM 100419 - 일반 웹 서버와의 SMTP 동작시 setFrom() 함수 사용 필요함.
@@ -159,17 +198,11 @@ public class SmtpAgent {
             Multipart mp = new MimeMultipart();
             mp.addBodyPart(mbp);
 
+            Runnable r = new Inner(this.file1, mp);
+            Thread t = new Thread(r);
+            t.start();
             // 첨부 파일 추가
-            if (this.file1 != null) {
-                MimeBodyPart a1 = new MimeBodyPart();
-                DataSource src = new FileDataSource(this.file1);
-                a1.setDataHandler(new DataHandler(src));
-                int index = this.file1.lastIndexOf('/');
-                String fileName = this.file1.substring(index + 1);
-                // "B": base64, "Q": quoted-printable
-                a1.setFileName(MimeUtility.encodeText(fileName, "UTF-8", "B"));
-                mp.addBodyPart(a1);
-            }
+            t.join();
             msg.setContent(mp);
 
             // 메일 전송

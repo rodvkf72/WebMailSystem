@@ -26,10 +26,12 @@
             <%
                 Connection conn = null;
                 Statement stmt = null;
+                String number = null;
                 String to = null;
                 String cc = null;
                 String subj = null;
                 String text = null;
+                String t_user = (String)session.getAttribute("userid");
 
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
@@ -40,23 +42,29 @@
                     }
                     stmt = conn.createStatement();
                     //복호화
-                    ResultSet decrypt_rs = stmt.executeQuery("SELECT "
+                    //ResultSet rs = stmt.executeQuery("SELECT * FROM test WHERE t_user");
+                    ResultSet decrypt_rs = stmt.executeQuery("SELECT test_number,"
                             + "CAST(AES_DECRYPT(UNHEX(test_to), 'to') AS CHAR), "
                             + "CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') AS CHAR), "
                             + "CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') AS CHAR), "
-                            + "CAST(AES_DECRYPT(UNHEX(test_text), 'text') AS CHAR) FROM test;");
+                            + "CAST(AES_DECRYPT(UNHEX(test_text), 'text') AS CHAR) FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
+                    
+                    //ResultSet decrypt_number = stmt.executeQuery("SELECT test_number FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
 
                     while (decrypt_rs.next()) {
+                        number = decrypt_rs.getString("test_number");
                         to = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_to), 'to') as char)");
                         cc = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') as char)");
                         subj = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') as char)");
                         text = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_text), 'text') as char)");%>
                         
             <form method="POST" action="write_mail.jsp">
+                <input type="text" name="number" value="<%=number == null ? "" : number%>" hidden>
                 수신자 : <input type="text" name="to" value="<%=to == null ? "" : to%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
                 참조 : <input type="text" name="cc" value="<%=cc == null ? "" : cc%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
                 메일 제목 : <input type="text" name="subj" value="<%=subj == null ? "" : subj%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
                 본문 : <input type="text" name="text" value="<%=text == null ? "" : text%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
+                <input type="text" name="temporary" value="TR" hidden>
                 <input type="submit" value="수정">
             </form>
                 

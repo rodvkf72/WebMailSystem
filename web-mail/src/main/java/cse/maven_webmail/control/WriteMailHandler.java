@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * @author jongmin
  */
 public class WriteMailHandler extends HttpServlet {
-
+  
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
      * @param request servlet request
@@ -50,9 +50,12 @@ public class WriteMailHandler extends HttpServlet {
 
 
                 case CommandType.SEND_MAIL_COMMAND: // 실제 메일 전송하기
+                    long start = System.currentTimeMillis();
                     out = response.getWriter();
                     boolean status = sendMessage(request);
                     out.print(getMailTransportPopUp(status));
+                    long end = System.currentTimeMillis();
+                    System.out.print("소요시간 : " + (end - start)/1000.0);
 //                    out.flush();
                     break;
 
@@ -84,16 +87,18 @@ public class WriteMailHandler extends HttpServlet {
 
         // 4. SmtpAgent 객체에 메일 관련 정보 설정
         SmtpAgent agent = new SmtpAgent(host, userid);
+        String fileName = parser.getFileName();
+
+        
         agent.setTo(parser.getToAddress());
         agent.setCc(parser.getCcAddress());
         agent.setSubj(parser.getSubject());
         agent.setBody(parser.getBody());
-        String fileName = parser.getFileName();
         logger.debug("WriteMailHandler.sendMessage() : fileName = " + fileName);
-        if (fileName != null) {
-            agent.setFile1(fileName);
-        }
 
+        if (fileName != null) {
+                agent.setFile1(fileName);
+            }
         // 5. 메일 전송 권한 위임
         if (agent.sendMessage()) {
             status = true;
