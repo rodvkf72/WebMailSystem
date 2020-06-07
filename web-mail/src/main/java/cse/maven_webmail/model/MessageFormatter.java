@@ -82,6 +82,14 @@ public class MessageFormatter {
         return buffer.toString();
     }
     
+    /**
+     * 답장 기능에 필요한 수신자, 참조자 문자열을 얻는 메소드입니다. 
+     * 
+     * @param message
+     * @return 수신자(to), 참조자(cc) 정보를 반환합니다. 
+     * 두 문자열은 :으로 구분되어있으며 나중에 write_mail로 이어지는 url을 만들 때 
+     * :을 기준으로 수신자인지 참조자인지 결정합니다. 
+     */
     public String getReplyParam(Message message) {
         StringBuilder buffer = new StringBuilder();
 

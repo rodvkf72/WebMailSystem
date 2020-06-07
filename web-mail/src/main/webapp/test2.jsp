@@ -4,6 +4,7 @@
     Author     : 김광호
 --%>
 
+<%@page import="cse.maven_webmail.control.DBInfo"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.sql.*"%>
 
@@ -26,8 +27,10 @@
 
     try {
         Class.forName("com.mysql.cj.jdbc.Driver");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/mail?serverTimezone=UTC", "root", "1463");
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName +"?serverTimezone=UTC", DBInfo.id, DBInfo.pw);
         //이건 개인 디비에 맞게 쓸 때 수정하셔야 합니다.
+        // id/ 비밀번호 입력 부분을 변경하였습니다. DBInfo 클래스에서 사용자 관련 내용을 수정하실 수 있습니다. 
+        
         if (conn == null) {
             throw new Exception("DB Connect Fail");
         }

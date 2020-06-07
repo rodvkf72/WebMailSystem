@@ -9,6 +9,8 @@
 <jsp:useBean id="menuagent" scope="page" class="cse.maven_webmail.model.AdminListBean"/>
 
 <!DOCTYPE html>
+<%-- 자바 코드 대신 Beans와 jstl을 이용하는 코드로 수정하였습니다. 
+     28~30라인도 수정하고 싶었으나 변수에 함수 리턴값을 저장하는 법을 몰라서 수정하지 못하였습니다. --%>
 
 <html>
     <head>
@@ -32,7 +34,7 @@
         
         <div id="main">
             <h2> 메일 사용자 목록 </h2>
-            <!-- 아래 코드는 위와 같이 Java Beans와 JSTL을 이용하는 코드로 바꾸어져야 함 -->
+            
             <%menuagent.setUserListinAgent();%>
             <ul>
                 <c:forEach var="userId" items="${menuagent.userList}">

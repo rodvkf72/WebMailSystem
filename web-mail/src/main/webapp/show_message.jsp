@@ -30,11 +30,14 @@
         </div>
 
         <div id="msgBody">
+            
             <%= pop3.getMessage(Integer.parseInt((String) request.getParameter("msgid")))%>
+            <%-- 답장 기능 구현 - 메일을 출력할 때 답장 기능 사용에 필요한 파라미터도 함께 읽어옵니다. --%>
             <% String tmp = pop3.getReply(Integer.parseInt((String) request.getParameter("msgid"))); 
                reply.parseUrl(tmp);
             %>
             <br/><br/>
+            <%-- 답장 버튼을 누르면 파라미터를 그대로 보내줍니다. --%>
             <input type="button" onclick="location.href='<%=reply.getUrl()%>';" value="답장하기"/>
         </div>
 

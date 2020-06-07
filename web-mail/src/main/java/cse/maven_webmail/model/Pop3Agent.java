@@ -148,6 +148,12 @@ public class Pop3Agent {
         }
     }
 
+    /**
+     * 답장에 필요한 수신자, 참조자 문자열을 구하는 메소드입니다. 
+     * 
+     * @param n 메일번호
+     * @return 수신자, 참조자 문자열 
+     */
     public String getReply(int n) {
         String result = "POP3  서버 연결이 되지 않아 메시지를 볼 수 없습니다.";
 
