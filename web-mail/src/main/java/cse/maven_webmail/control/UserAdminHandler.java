@@ -72,7 +72,7 @@ public class UserAdminHandler extends HttpServlet {
                     case CommandType.CHANGE_USER_PWD:
                         changePwd(request, response, out, session, useridset);
                         break;
-
+                        
                     default:
                         out.println("없는 메뉴를 선택하셨습니다. 어떻게 이 곳에 들어오셨나요?");
                         break;
@@ -221,6 +221,7 @@ public class UserAdminHandler extends HttpServlet {
         }
     }
     
+    //비밀번호 변경 메서드
     private void changePwd(HttpServletRequest request, HttpServletResponse response, PrintWriter out, HttpSession session, String useridset) {
          String server = "127.0.0.1";
         int port = 4555;
@@ -248,6 +249,8 @@ public class UserAdminHandler extends HttpServlet {
         }
     }
     
+    //비밀번호 변경 성공했을때
+
      private String getChangeUserPwdSuccessPopUp() {
         String alertMessage = "비밀번호 변경에 성공했습니다.";
         StringBuilder successPopUp = new StringBuilder();
@@ -269,7 +272,9 @@ public class UserAdminHandler extends HttpServlet {
         return successPopUp.toString();
     }
 
-    private String getChangeUserPwdFailurePopUp() {
+     //비밀번호 변경 실패했을때
+     private String getChangeUserPwdFailurePopUp() {
+
         String alertMessage = "비밀번호 변경에 실패했습니다.";
         StringBuilder successPopUp = new StringBuilder();
         successPopUp.append("<html>");
@@ -289,7 +294,6 @@ public class UserAdminHandler extends HttpServlet {
         successPopUp.append("</body></html>");
         return successPopUp.toString();
     }
-    
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 

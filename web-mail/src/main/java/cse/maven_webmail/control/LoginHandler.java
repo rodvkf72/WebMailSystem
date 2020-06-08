@@ -44,7 +44,9 @@ public class LoginHandler extends HttpServlet {
         HttpSession session = request.getSession();
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
+
         Log log = LogFactory.getLog(LoginHandler.class);
+
         int selected_menu = Integer.parseInt((String) request.getParameter("menu"));
 
 
@@ -72,15 +74,19 @@ public class LoginHandler extends HttpServlet {
                             session.setAttribute("password", password);
                             
                             //비밀번호 마지막 변경 날짜를 받아오는 함수 호출
+               
                             int resultDate = getPwdChangedDate(request, response, out, userid, log);
                             
+                            //마지막 변경 후 지난 날짜가 90일 이상일경우
                             if(resultDate > 90)
                             {
+                                //비밀번호 변경 요청 페이지로 이동
                                 response.sendRedirect("change_pwd.jsp");
                                 log.info("change the password");
                             }
                             else
                             {
+                                //90일 이하이거나 0일경우 메인 메뉴 페이지로 이동
                                 log.info("main_menu.jsp");
                                 response.sendRedirect("main_menu.jsp");
                             }
@@ -117,9 +123,14 @@ public class LoginHandler extends HttpServlet {
         return status;
     }
     
+
     //데이터베이스에서 마지막으로 비밀번호를 변경한 날짜로부터 몇일이 지났는지 받아온다.
+
     int getPwdChangedDate(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String userid, Log log){
         try{
+            //DBCP데이터베이스 기법 사용
+            //데이터베이스 정보는 context.xml에 있음
+
             //Context 와 Datasource 검색
             log.info("database connect");
             String JNDIname = "java:/comp/env/jdbc/Webmail";
@@ -135,7 +146,8 @@ public class LoginHandler extends HttpServlet {
             
             //SQL 질의 실행
             String sql = "select datediff(now(), mDate), mDate from backup_usersupdate where username = ? order by mDate desc limit 1";
-            log.info(sql);
+
+            //log.info(sql);
             java.sql.PreparedStatement pstmt = conn.prepareCall(sql);
             pstmt.setString(1, userid);
             ResultSet rs = stmt.executeQuery(sql);
@@ -148,7 +160,8 @@ public class LoginHandler extends HttpServlet {
                 log.info(resultdate);
             }
             else
-                resultdate=95;
+                resultdate=0;
+
             
             rs.close();
             stmt.close();
