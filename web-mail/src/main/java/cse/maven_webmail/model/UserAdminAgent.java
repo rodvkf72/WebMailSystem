@@ -203,6 +203,46 @@ public class UserAdminAgent {
         }
     }  // deleteUsers()
 
+    public boolean changePassword(String userId, String oldPassword, String newPassword) {
+        boolean status = false;
+        byte[] messageBuffer = new byte[1024];
+
+        System.out.println("changePassword() called");
+        if (!isConnected) {
+            return status;
+        }
+
+        try {
+            // 1: "setPassword" command
+            String addUserCommand = "setPassword " + userId + " " + newPassword + EOL;
+            os.write(addUserCommand.getBytes());
+
+            // 2: response for "adduser" command
+            java.util.Arrays.fill(messageBuffer, (byte) 0);
+            //if (is.available() > 0) {
+            is.read(messageBuffer);
+            String recvMessage = new String(messageBuffer);
+            System.out.println(recvMessage);
+            //}
+            // 3: 기존 메일사용자 여부 확인
+            if (recvMessage.contains("reset")) {
+                status = true;
+            } else {
+                status = false;
+            }
+            // 4: 연결 종료
+            quit();
+            System.out.flush();  // for test
+            socket.close();
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+            status = false;
+        } finally {
+            // 5: 상태 반환
+            return status;
+        }
+    }  // changePassword()
+    
     public boolean verify(String userid) {
         boolean status = false;
         byte[] messageBuffer = new byte[1024];
