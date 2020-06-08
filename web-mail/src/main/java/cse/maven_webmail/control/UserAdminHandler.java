@@ -45,6 +45,7 @@ public class UserAdminHandler extends HttpServlet {
             HttpSession session = request.getSession();
             //String userid = "admin";
             String userid = (String) session.getAttribute("userid");
+            String useridset = userid;//유저 아이디를 admin으로 만들기 전에 저장해둠.
             if (userid == null){
                 userid = "admin";
             }
@@ -66,6 +67,10 @@ public class UserAdminHandler extends HttpServlet {
 
                     case CommandType.DELETE_USER_COMMAND:
                         deleteUser(request, response, out);
+                        break;
+                        
+                    case CommandType.CHANGE_USER_PWD:
+                        changePwd(request, response, out, session, useridset);
                         break;
 
                     default:
@@ -215,6 +220,77 @@ public class UserAdminHandler extends HttpServlet {
             logger.error(" UserAdminHandler.deleteUser : exception = " + ex);
         }
     }
+    
+    private void changePwd(HttpServletRequest request, HttpServletResponse response, PrintWriter out, HttpSession session, String useridset) {
+         String server = "127.0.0.1";
+        int port = 4555;
+        
+        try {
+            UserAdminAgent agent = new UserAdminAgent(server, port, this.getServletContext().getRealPath("."));
+            String userid = useridset;// for test
+            String oldpwd = request.getParameter("oldpassword");
+            String newpwd = request.getParameter("newpassword");// for test
+            //out.println("userid = " + userid + "<br>");
+            //out.println("password = " + password + "<br>");
+            out.flush();
+            // if (addUser successful)  사용자 등록 성공 팦업창
+            // else 사용자 등록 실패 팝업창
+            if (agent.changePassword(userid, oldpwd, newpwd)) {
+                session.setAttribute("password", newpwd);
+                out.println(getChangeUserPwdSuccessPopUp());
+                 
+            } else {
+                out.println(getChangeUserPwdFailurePopUp());
+            }
+            out.flush();
+        } catch (Exception ex) {
+            out.println("시스템 접속에 실패했습니다.");
+        }
+    }
+    
+     private String getChangeUserPwdSuccessPopUp() {
+        String alertMessage = "비밀번호 변경에 성공했습니다.";
+        StringBuilder successPopUp = new StringBuilder();
+        successPopUp.append("<html>");
+        successPopUp.append("<head>");
+
+        successPopUp.append("<title>메일 전송 결과</title>");
+       successPopUp.append("<link type=\"text/css\" rel=\"stylesheet\" href=\"css/main_style.css\" />");
+        successPopUp.append("</head>");
+        successPopUp.append("<body onload=\"goMainMenu()\">");
+        successPopUp.append("<script type=\"text/javascript\">");
+        successPopUp.append("function goMainMenu() {");
+        successPopUp.append("alert(\"");
+        successPopUp.append(alertMessage);
+        successPopUp.append("\"); ");
+        successPopUp.append("window.location = \"main_menu.jsp\"; ");
+        successPopUp.append("}  </script>");
+        successPopUp.append("</body></html>");
+        return successPopUp.toString();
+    }
+
+    private String getChangeUserPwdFailurePopUp() {
+        String alertMessage = "비밀번호 변경에 실패했습니다.";
+        StringBuilder successPopUp = new StringBuilder();
+        successPopUp.append("<html>");
+        successPopUp.append("<head>");
+
+        successPopUp.append("<title>메일 전송 결과</title>");
+        successPopUp.append("<link type=\"text/css\" rel=\"stylesheet\" href=\"css/main_style.css\" />");
+        successPopUp.append("</head>");
+        successPopUp.append("<body onload=\"goMainMenu()\">");
+        successPopUp.append("<script type=\"text/javascript\">");
+        successPopUp.append("function goMainMenu() {");
+        successPopUp.append("alert(\"");
+        successPopUp.append(alertMessage);
+        successPopUp.append("\"); ");
+        successPopUp.append("window.location = \"main_menu.jsp\"; ");
+        successPopUp.append("}  </script>");
+        successPopUp.append("</body></html>");
+        return successPopUp.toString();
+    }
+    
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
     /**
