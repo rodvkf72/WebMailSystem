@@ -111,52 +111,52 @@ public class UserAdminHandler extends HttpServlet {
             
             //id 유효성 체크
             if(userid.equals("")){
-                out.println(getUserRegistrationFailurePopUp("아이디를 입력해주세요."));
+                out.println(getUserRegistrationPopUp("아이디를 입력해주세요."));
                 return;
             }
             
             regex = Pattern.matches(matchId, userid);
 
             if(!regex){
-                out.println(getUserRegistrationFailurePopUp("id에 영문과 숫자만을 사용해주세요."));
+                out.println(getUserRegistrationPopUp("id에 영문과 숫자만을 사용해주세요."));
                 return;
             }
             
             if(userid.length() <5 || userid.length() > 20){
-                out.println(getUserRegistrationFailurePopUp("4자 이상 20자 이하의 아이디를 입력해주세요."));
+                out.println(getUserRegistrationPopUp("4자 이상 20자 이하의 아이디를 입력해주세요."));
                 return;
             }
             
             // 비밀번호 유효성 체크 
             regex = Pattern.matches(matchTestPtn, password);
             if(!regex){
-                out.println(getUserRegistrationFailurePopUp("숫자를 포함한 6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
+                out.println(getUserRegistrationPopUp("숫자를 포함한 6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
                 return;
             }
             
             if(password.contains(userid)){
-                out.println(getUserRegistrationFailurePopUp("아이디를 패스워드에 넣을 수 없습니다."));
+                out.println(getUserRegistrationPopUp("아이디를 패스워드에 넣을 수 없습니다."));
                 return;
             }
             
             regex = Pattern.matches(matchBlankPtn, password);
             if(regex){
-                out.println(getUserRegistrationFailurePopUp("공백을 제외하고 입력해주세요."));
+                out.println(getUserRegistrationPopUp("공백을 제외하고 입력해주세요."));
                 return;
             }
             
             if(password.contains("(") || password.contains(")") ||password.contains("[") || password.contains("]")
                     || password.contains("{") || password.contains("}") || password.contains("<") || password.contains(">")){
-                out.println(getUserRegistrationFailurePopUp("사용할 수 없는 문자가 포함되어 있습니다.."));
+                out.println(getUserRegistrationPopUp("사용할 수 없는 문자가 포함되어 있습니다.."));
                 return;
             }
             
             // if (addUser successful)  사용자 등록 성공 팝업창
             // else 사용자 등록 실패 팝업창
             if (agent.addUser(userid, password)) {
-                out.println(getUserRegistrationSuccessPopUp());
+                out.println(getUserRegistrationPopUp("사용자 등록에 성공하였습니다."));
             } else {
-                out.println(getUserRegistrationFailurePopUp("사용자 등록에 실패하였습니다."));
+                out.println(getUserRegistrationPopUp("사용자 등록에 실패하였습니다."));
             }
             
             out.flush();
@@ -166,28 +166,7 @@ public class UserAdminHandler extends HttpServlet {
         }
     }
 
-    private String getUserRegistrationSuccessPopUp() {
-        String alertMessage = "사용자 등록이 성공했습니다.";
-        StringBuilder successPopUp = new StringBuilder();
-        successPopUp.append("<html>");
-        successPopUp.append("<head>");
-
-        successPopUp.append("<title>메일 전송 결과</title>");
-        successPopUp.append("<link type=\"text/css\" rel=\"stylesheet\" href=\"css/main_style.css\" />");
-        successPopUp.append("</head>");
-        successPopUp.append("<body onload=\"goMainMenu()\">");
-        successPopUp.append("<script type=\"text/javascript\">");
-        successPopUp.append("function goMainMenu() {");
-        successPopUp.append("alert(\"");
-        successPopUp.append(alertMessage);
-        successPopUp.append("\"); ");
-        successPopUp.append("window.location = \"index.jsp\"; ");
-        successPopUp.append("}  </script>");
-        successPopUp.append("</body></html>");
-        return successPopUp.toString();
-    }
-
-    private String getUserRegistrationFailurePopUp(String alertMessage) {
+    private String getUserRegistrationPopUp(String alertMessage) {
         StringBuilder successPopUp = new StringBuilder();
         successPopUp.append("<html>");
         successPopUp.append("<head>");

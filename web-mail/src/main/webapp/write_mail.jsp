@@ -17,6 +17,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>메일 쓰기 화면</title>
         <link type="text/css" rel="stylesheet" href="css/main_style.css" />
+        
     </head>
     <body>
         <jsp:include page="header.jsp" />
@@ -28,7 +29,7 @@
         <div id="main">
             <%-- <jsp:include page="mail_send_form.jsp" /> --%>
 
-            <form enctype="multipart/form-data" method="POST" name="frm"
+            <form enctype="multipart/form-data" method="POST" name="frm" onsubmit="return uploadFile()"
                   action="WriteMail.do?menu=<%= CommandType.SEND_MAIL_COMMAND%>">
                 <table>
                     <tr>
@@ -59,9 +60,9 @@
                     
                     <tr>
                         <td>첨부 파일</td>
-                        <td> <input type="file" name="file1"  size="80">  </td>
+                        <td> <input type="file" id="file1" name="file1" size="40">  </td>
                     </tr>
-                    <input type="text" name="temp" value="<%=request.getParameter("temporary") == null ? "" : request.getParameter("temporary")%>" hidden>
+                    <input type="text" name="temp" id="temp" value="<%=request.getParameter("temporary") == null ? "" : request.getParameter("temporary")%>" hidden>
                     <tr>
                         <td colspan="2">
                             <input name="sbt" type="submit" value="메일 보내기" onclick="submitForm();">
@@ -106,6 +107,34 @@
                          */
                         return 'abc';
                     }
+                }
+                
+                function uploadFile(){
+                    var size_limit = 20 * 1000 * 1000;
+                    //if(document.frm.file1.values < 1){
+                    //    alert("선택된 이미지가 없습니다.");
+                    //    return;
+                    //}
+                    var file = document.getElementById('file1').files[0];
+                    var fileName = file.name;
+                    console.log(fileName);     
+                    
+                    if(fileName.length != 0){
+                        if(fileName.length > 40){
+                            alert("파일 이름은 40자를 넘을 수 없습니다.");
+                            //file.value = "";
+                            return false;
+                        }
+                    }
+                    
+                    if(file.size() > size_limit){
+                        alert('Cannot upload the file because of FILE SIZE > 20MB');
+                        //file.value = "";
+                        return false;
+                    }
+                    
+                    return true;
+                    
                 }
             </script>
         </div>

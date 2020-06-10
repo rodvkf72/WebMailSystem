@@ -16,6 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.Pop3Agent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +35,8 @@ public class ReadMailHandler extends HttpServlet {
     private static final Logger logger =  LoggerFactory.getLogger(ReadMailHandler.class);
     
     private final String homeDirectory = "/maven_webmail/";
-    private final String uploadTempDir = "C:/temp/upload";
-    private final String uploadTargetDir = "C:/temp/upload";
+    private final String uploadTempDir = DBInfo.uploadTempDir;
+    private final String uploadTargetDir = DBInfo.uploadTempDir;
 
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -76,8 +83,11 @@ public class ReadMailHandler extends HttpServlet {
             request.setCharacterEncoding("UTF-8");
             // LJM 041203 - 아래와 같이 해서 한글파일명 제대로 인식되는 것 확인했음.
             String fileName = request.getParameter("filename");
-            String outfileName = XSSFilter.Filter(">>>>>> DOWNLOAD: file name = " + fileName);
-            logger.info(outfileName);
+            String sentDate = request.getParameter("date");
+            //String outfileName = XSSFilter.Filter(">>>>>> DOWNLOAD: file name = " + fileName);
+            //위 소스 있으니까 에러가 생겨서 주석처리 했습니다ㅜㅜ 
+            
+            //logger.info(outfileName);
             // fileName에 있는 ' '는 '+'가 파라미터로 전송되는 과정에서 변한 것이므로
             // 다시 변환시켜줌.
 //            fileName = fileName.replaceAll(" ", "+");
@@ -91,7 +101,7 @@ public class ReadMailHandler extends HttpServlet {
             //String downloadDir = "/var/spool/webmail/download/";
 
             // 윈도우즈 환경 사용시
-            String downloadDir = "C:/temp/download/";
+            String downloadDir = DBInfo.downloadTempDir;
             // LJM 090430 : 수정해야 할 부분 - end   ------------------
 
 //            response.setHeader("Content-Disposition", "attachment; filename=" +
@@ -103,6 +113,9 @@ public class ReadMailHandler extends HttpServlet {
             response.setHeader("Content-Disposition", "attachment; filename="
                     + URLEncoder.encode(fileName, "UTF-8") + ";");
 
+            //String newFileName = getNewFileName(fileName, sentDate);
+            
+            logger.info(downloadDir + userid + "/" + fileName);
             File f = new File(downloadDir + userid + "/" + fileName);
             byte[] b = new byte[(int) f.length()];
             // try-with-resource 문은 fis를 명시적으로 close해 주지 않아도 됨.
@@ -121,6 +134,41 @@ public class ReadMailHandler extends HttpServlet {
             // 다운로드후 파일 삭제
             //f.delete();
         }
+    }
+    
+    private String getNewFileName(String fileName, String sentdate){
+        String newFileName= ""; // 새 파일이름을 저장할 String 변수 
+        String sql;
+        
+        try{
+            // 1. 데이터베이스 세팅
+            final String JdbcDriver = "com.mysql.cj.jdbc.Driver";
+            
+            Class.forName(JdbcDriver);
+            
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName + "?serverTimezone=UTC", DBInfo.id, DBInfo.pw);;
+            
+            sentdate = sentdate.replaceAll("-", "");
+            String tmpfileName = sentdate + fileName;
+            
+            // 2. select 로 파일명 찾기 
+            sql = "SELECT file_realname FROM file WHERE file_name = \"" + tmpfileName + "\";";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            // 3. directory에 저장된 filename 확인 
+            if(rs.next()) {
+                newFileName = rs.getString("file_realname");
+            }
+            
+            logger.info("download newFilename: " + newFileName);
+            
+        }catch (Exception ex){
+            logger.info("오류발생 + " + ex.toString());
+            return "";
+        }
+        
+        return newFileName;
     }
 
     private boolean deleteMessage(HttpServletRequest request) {
