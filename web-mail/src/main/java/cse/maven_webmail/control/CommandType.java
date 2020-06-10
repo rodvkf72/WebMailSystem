@@ -19,7 +19,9 @@ public class CommandType {
     
     public final static int ADD_USER_COMMAND = 61;
     public final static int DELETE_USER_COMMAND = 62;
-    public final static int CHANGE_USER_PWD = 63;//for change password
+
+    public final static int CHANGE_USER_PWD = 63;
+
 
     public final static int LOGIN = 91;
     public final static int LOGOUT = 92;

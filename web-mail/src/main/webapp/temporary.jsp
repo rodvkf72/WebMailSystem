@@ -1,5 +1,5 @@
 <%-- 
-    Document   : test
+    Document   : temporary
     Created on : 2020. 5. 11., 오후 3:20:59
     Author     : 김광호
 --%>
@@ -7,6 +7,7 @@
 <%@page import="cse.maven_webmail.control.DBInfo"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="java.sql.*"%>
+<%@page import="java.net.URLEncoder"%>
 
 <!DOCTYPE html>
 <html>
