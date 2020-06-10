@@ -10,6 +10,7 @@
 <%@page import="java.net.URLEncoder"%>
 
 <!DOCTYPE html>
+<% request.setCharacterEncoding("UTF-8"); %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -33,14 +34,14 @@
                 String cc = null;
                 String subj = null;
                 String text = null;
-                String t_user = (String)session.getAttribute("userid");
+                String t_user = (String) session.getAttribute("userid");
 
                 try {
                     Class.forName("com.mysql.cj.jdbc.Driver");
                     conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName + "?serverTimezone=UTC", DBInfo.id, DBInfo.pw);
                     //이건 개인 디비에 맞게 쓸 때 수정하셔야 합니다.
                     // id/ 비밀번호 입력 부분을 변경하였습니다. DBInfo 클래스에서 사용자 관련 내용을 수정하실 수 있습니다. 
-                    
+
                     if (conn == null) {
                         throw new Exception("DB Connect Fail");
                     }
@@ -52,16 +53,15 @@
                             + "CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') AS CHAR), "
                             + "CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') AS CHAR), "
                             + "CAST(AES_DECRYPT(UNHEX(test_text), 'text') AS CHAR) FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
-                    
-                    //ResultSet decrypt_number = stmt.executeQuery("SELECT test_number FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
 
+                    //ResultSet decrypt_number = stmt.executeQuery("SELECT test_number FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
                     while (decrypt_rs.next()) {
                         number = decrypt_rs.getString("test_number");
                         to = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_to), 'to') as char)");
                         cc = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') as char)");
                         subj = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') as char)");
                         text = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_text), 'text') as char)");%>
-                        
+
             <form method="POST" action="write_mail.jsp">
                 <input type="text" name="number" value="<%=number == null ? "" : number%>" hidden>
                 수신자 : <input type="text" name="to" value="<%=to == null ? "" : to%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
@@ -71,7 +71,7 @@
                 <input type="text" name="temporary" value="TR" hidden>
                 <input type="submit" value="수정">
             </form>
-                
+
             <%}
                 } finally {
                     try {
@@ -86,10 +86,10 @@
                     }
                 }
             %>  
-            
+
         </div>
-            
+
         <jsp:include page="footer.jsp" />
-        
+
     </body>
 </html>
