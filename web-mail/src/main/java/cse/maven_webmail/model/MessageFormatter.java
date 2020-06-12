@@ -64,10 +64,12 @@ public class MessageFormatter {
         MessageParser parser = new MessageParser(message, userid);
         parser.parse(true);
 
+        String sentDate = parser.getSentDate();
+        
         buffer.append("보낸 사람: " + parser.getFromAddress() + " <br>");
         buffer.append("받은 사람: " + parser.getToAddress() + " <br>");
         buffer.append("Cc &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; : " + parser.getCcAddress() + " <br>");
-        buffer.append("보낸 날짜: " + parser.getSentDate() + " <br>");
+        buffer.append("보낸 날짜: " + sentDate + " <br>");
         buffer.append("제 &nbsp;&nbsp;&nbsp;  목: " + parser.getSubject() + " <br> <hr>");
 
         buffer.append(parser.getBody());

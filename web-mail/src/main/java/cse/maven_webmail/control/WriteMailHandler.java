@@ -61,7 +61,7 @@ public class WriteMailHandler extends HttpServlet {
                     boolean status = sendMessage(request);
                     out.print(getMailTransportPopUp(status));
                     long end = System.currentTimeMillis();
-                    System.out.print("소요시간 : " + (end - start)/1000.0);
+                    logger.info("소요시간 : " + (end - start)/1000.0);
 //                    out.flush();
                     break;
 
@@ -95,7 +95,6 @@ public class WriteMailHandler extends HttpServlet {
         SmtpAgent agent = new SmtpAgent(host, userid);
         String fileName = parser.getFileName();
 
-        
         agent.setTo(parser.getToAddress());
         agent.setCc(parser.getCcAddress());
         agent.setSubj(parser.getSubject());
@@ -103,7 +102,8 @@ public class WriteMailHandler extends HttpServlet {
         logger.debug("WriteMailHandler.sendMessage() : fileName = " + fileName);
 
         if (fileName != null) {
-                agent.setFile1(fileName);
+            agent.setFile1(fileName);
+            
             }
         // 5. 메일 전송 권한 위임
         //sendMessage()와 savesentmail(agent)가 둘다 true일 때

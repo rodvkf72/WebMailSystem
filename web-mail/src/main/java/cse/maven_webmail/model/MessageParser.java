@@ -4,6 +4,7 @@
  */
 package cse.maven_webmail.model;
 
+import cse.maven_webmail.control.DBInfo;
 import java.io.File;
 import java.io.FileOutputStream;
 import javax.activation.DataHandler;
@@ -29,7 +30,8 @@ public class MessageParser {
     private String subject;
     private String body;
     private String fileName;
-    private final String downloadTempDir = "C:/temp/download/";
+    private final String downloadTempDir = DBInfo.downloadTempDir; // DBInfo 클래스에서 각자에 맞게 수정해주세요.
+    
     private String userid;
 
     private static final Logger logger =  LoggerFactory.getLogger(MessageParser.class);
@@ -47,7 +49,7 @@ public class MessageParser {
             if (parseBody) {
                 getPart(message);
             }
-            printMessage(parseBody);
+            //printMessage(parseBody);
             //  예외가 발생하지 않았으므로 정상적으로 동작하였음.
             status = true;
         } catch (Exception ex) {
@@ -69,6 +71,7 @@ public class MessageParser {
         }
         subject = message.getSubject();
         sentDate = message.getSentDate().toString();
+        
         sentDate = sentDate.substring(0, sentDate.length() - 8);  // 8 for "KST 20XX"
     }
 
@@ -80,9 +83,10 @@ public class MessageParser {
                 || disp.equalsIgnoreCase(Part.INLINE))) {  // 첨부 파일
 //            fileName = p.getFileName();
             fileName = MimeUtility.decodeText(p.getFileName());
+            //fileName = "diet.png";
 //            fileName = fileName.replaceAll(" ", "%20");
             if (fileName != null) {
-                logger.info("MessageParser.getPart() : file = " + fileName);
+                //logger.info("MessageParser.getPart() : file = " + fileName);
                 // 첨부 파일을 서버의 내려받기 임시 저장소에 저장
                 String tempUserDir = this.downloadTempDir + this.userid;
                 File dir = new File(tempUserDir);
@@ -124,6 +128,7 @@ public class MessageParser {
         }
     }
 
+    /*
     private void printMessage(boolean printBody) {
         // 메일 전문을 로그로 출력하는건 보안성 문제가 있음
         // 프로젝트 제출시에는 없애야 합니다. 
@@ -141,7 +146,7 @@ public class MessageParser {
             logger.trace("첨부파일: " + fileName);
         }
     }
-
+*/
     private String getAddresses(Address[] addresses) {
         StringBuilder buffer = new StringBuilder();
 

@@ -231,6 +231,7 @@ public class SmtpAgent {
             }
             //보낸 메일함에 안들어가도 전송 실패로 만들도록 고쳐야 함.
             status = true;
+            
         } catch (Exception ex) {
             logger.error("sendMessage() error: " + ex);
         } finally {
