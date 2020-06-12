@@ -45,8 +45,13 @@ public class UserAdminHandler extends HttpServlet {
             HttpSession session = request.getSession();
             //String userid = "admin";
             String userid = (String) session.getAttribute("userid");
+            String pwd = (String) session.getAttribute("password");
+           
+            String oldpwd = (String) request.getParameter("oldpassword");
+            //out.println(oldpwd);
+            
             String useridset = userid;//유저 아이디를 admin으로 만들기 전에 저장해둠.
-            if (userid == null){
+            if ((userid == null) || ( oldpwd.equals(pwd))){
                 userid = "admin";
             }
             
@@ -55,7 +60,13 @@ public class UserAdminHandler extends HttpServlet {
                 //out.println("<a href=index.jsp> 초기 화면으로 이동 </a>");
                 out.println("<a href=Login.do?menu=61> 초기 화면으로 이동 </a>");
                 return;
-            } else {
+            } 
+            else if(!oldpwd.equals(pwd)){
+                 out.println("비밀번호가 일치하지 않습니다.");
+                 out.println("<a href=mypage.jsp> 마이 페이지로 이동 </a>");
+                 return;
+            }
+            else {
 
                 request.setCharacterEncoding("UTF-8");
                 int select = Integer.parseInt((String) request.getParameter("menu"));

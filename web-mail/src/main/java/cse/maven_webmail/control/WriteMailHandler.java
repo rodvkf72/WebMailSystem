@@ -13,6 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.FormParser;
 import cse.maven_webmail.model.SmtpAgent;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +77,7 @@ public class WriteMailHandler extends HttpServlet {
         }
     }
 
-    private boolean sendMessage(HttpServletRequest request) {
+    private boolean sendMessage(HttpServletRequest request) throws SQLException {
         boolean status = false;
 
         // 1. toAddress, ccAddress, subject, body, file1 정보를 파싱하여 추출
@@ -100,11 +106,14 @@ public class WriteMailHandler extends HttpServlet {
                 agent.setFile1(fileName);
             }
         // 5. 메일 전송 권한 위임
-        if (agent.sendMessage()) {
+        //sendMessage()와 savesentmail(agent)가 둘다 true일 때
+        if (agent.sendMessage()){
             status = true;
+            //status를 true로 하고 보냄 메일함에 데이터 저장      
         }
         return status;
     }  // sendMessage()
+    
 
     private String getMailTransportPopUp(boolean success) {
         String alertMessage = null;

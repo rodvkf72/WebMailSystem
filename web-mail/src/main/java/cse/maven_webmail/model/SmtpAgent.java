@@ -5,8 +5,16 @@
 package cse.maven_webmail.model;
 
 import com.sun.mail.smtp.SMTPMessage;
+import cse.maven_webmail.control.WriteMailHandler;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.activation.DataHandler;
@@ -21,6 +29,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +47,7 @@ public class SmtpAgent {
     protected String subj = null;
     protected String body = null;
     protected String file1 = null;
+    protected File attachedFile = null;
 
     private static final Logger logger =  LoggerFactory.getLogger(SmtpAgent.class);
     
@@ -212,10 +223,13 @@ public class SmtpAgent {
             // 첨부 파일 삭제함
             if (this.file1 != null) {
                 File f = new File(this.file1);
+                boolean sentinsertsuccess = savesentmail(f);
+                logger.info("sent mail insert success = " + sentinsertsuccess);
                 if (!f.delete()) {
                     logger.error(this.file1 + " 파일 삭제가 제대로 안 됨.");
                 }
             }
+            //보낸 메일함에 안들어가도 전송 실패로 만들도록 고쳐야 함.
             status = true;
         } catch (Exception ex) {
             logger.error("sendMessage() error: " + ex);
@@ -223,4 +237,109 @@ public class SmtpAgent {
             return status;
         }
     }  // sendMessage()
+
+    boolean savesentmail(File file) throws SQLException{
+        
+        Log log = LogFactory.getLog(SmtpAgent.class);
+        Statement stmt = null;
+        Connection conn = null;
+        
+        try{
+            String userId = userid;
+            String toAddress = to;
+            String ccAddress = cc;
+            String subject = subj;
+            String text = body;
+            String fname = file1;
+            String filename = fname.substring(fname.lastIndexOf("/")+1);
+            File attachedfile = file;
+            int fileLength = (int) attachedfile.length();
+            
+            InputStream ins = new FileInputStream(attachedfile);
+            
+            
+            //DBCP데이터베이스 기법 사용
+            //데이터베이스 정보는 context.xml에 있음
+            //Context 와 Datasource 검색
+            log.info("try to connect the database to save sent mail...");
+            
+            String JNDIname = "java:/comp/env/jdbc/Webmail";
+            log.info(userId);
+            log.info(filename);
+            
+            javax.naming.Context ctx = new javax.naming.InitialContext();
+            javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
+            
+            //Connection 객체 생성
+            conn = ds.getConnection();
+            //Statement 객체 생성
+            stmt = conn.createStatement();
+
+            //SQL 질의 실행
+
+            String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_name, file_body, saveDate) VALUES ("
+                    + "HEX(AES_ENCRYPT('" + userId + "', 'sender')),"
+                    + "HEX(AES_ENCRYPT('" + toAddress + "', 'recipient')),"
+                    + "HEX(AES_ENCRYPT('" + ccAddress + "', 'CarbonCopy')),"
+                    + "HEX(AES_ENCRYPT('" + subject + "', 'message_name')),"
+                    + "HEX(AES_ENCRYPT('" + text + "', 'message_body')),"
+                    + "?, ?, + now());";
+
+
+           
+            //String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_body, saveDate) VALUES(HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)),HEX(AES_ENCRYPT(?, ?)), ?, now());";
+           // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";            
+           
+           java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            /*
+            pstmt.setString(1, userId);
+            pstmt.setString(2, "sender");
+            pstmt.setString(3, toAddress);
+            pstmt.setString(4, "recipeint");
+            pstmt.setString(5, ccAddress);
+            pstmt.setString(6, "CarbonCopy");
+            pstmt.setString(7, subject);
+            pstmt.setString(8, "message_name");
+            pstmt.setString(9, text);
+            pstmt.setString(10, "message_body");
+ */
+            pstmt.setString(1, filename);
+            pstmt.setBinaryStream(2, ins, fileLength);
+            
+            log.info(sql);
+            
+            pstmt.execute();
+            /*
+            if(count>0)
+            {
+                log.info(count);
+                log.info("insert success");
+                return true;
+            }
+            else
+            {
+                log.info(count);
+                log.info("failed..");
+                return false;
+            }
+            */
+            log.info("database connect success");
+            return true;
+        }
+        catch(Exception ex){
+            log.info("database connect failed");
+            log.info(ex.getMessage());
+            return false;
+        }
+        finally{
+             if (stmt != null)
+                stmt.close();
+             if (conn != null)
+                 conn.close();
+             
+        }
+        
+    }
+
+
 }

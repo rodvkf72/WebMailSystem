@@ -19,6 +19,7 @@ public class MessageFormatter {
         this.userid = userid;
     }
 
+    //getMessageList()에서 사용
     public String getMessageTable(Message[] messages) {
         StringBuilder buffer = new StringBuilder();
 
@@ -56,6 +57,7 @@ public class MessageFormatter {
 //        return "MessageFormatter 테이블 결과";
     }
 
+    //show_message.jsp에서 사용
     public String getMessage(Message message) {
         StringBuilder buffer = new StringBuilder();
 

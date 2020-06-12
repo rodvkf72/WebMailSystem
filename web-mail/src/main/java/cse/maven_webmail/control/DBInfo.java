@@ -13,16 +13,16 @@ package cse.maven_webmail.control;
  * @author 김희정
  */
 public class DBInfo {
-    /* 1. hjk */
+    /* 1. hjk
     public final static String id = "root";
     public final static String pw = "3456";
     public final static String projectName = "project";
-    
-    /* 2.
-    public final static String id = "root";
-    public final static String pw = "    ";
+     */
+    /* 2. */
+    public final static String id = "kms";
+    public final static String pw = "alth0223";
     public final static String projectName = "mail";
-    */
+    
     
     /* 3.
     public final static String id = "root";
