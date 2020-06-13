@@ -53,8 +53,7 @@
                             + "CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') AS CHAR), "
                             + "CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') AS CHAR), "
                             + "CAST(AES_DECRYPT(UNHEX(test_text), 'text') AS CHAR) FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
-
-                    //ResultSet decrypt_number = stmt.executeQuery("SELECT test_number FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
+                    
                     while (decrypt_rs.next()) {
                         number = decrypt_rs.getString("test_number");
                         to = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_to), 'to') as char)");

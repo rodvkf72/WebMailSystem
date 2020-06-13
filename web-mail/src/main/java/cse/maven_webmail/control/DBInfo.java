@@ -20,9 +20,9 @@ public class DBInfo {
     public final static String pw = "3456";
     public final static String projectName = "project";
      */
-    2.
-    public final static String id = "kms";
-    public final static String pw = "alth0223";
+    //2.
+    public final static String id = "root";
+    public final static String pw = "1463";
     public final static String projectName = "mail";
  
     /*

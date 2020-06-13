@@ -21,8 +21,8 @@ public class XSSFilter {
       .replaceAll("'", "&#x27;")
       .replaceAll("/", "&#x2F;")
       .replaceAll(" ", "&nbsp;")
-      .replaceAll("(", "&#40;")
-      .replaceAll(")", "&#41;")
+      .replaceAll("\\(", "&#40;")
+      .replaceAll("\\)", "&#41;")
       .replaceAll("\n", "<br />");
       return data;
      }

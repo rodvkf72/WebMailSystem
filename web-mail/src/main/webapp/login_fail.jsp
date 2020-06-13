@@ -3,6 +3,7 @@
     Author     : jongmin
 --%>
 
+<%@page import="cse.maven_webmail.control.XSSFilter"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 
 <!DOCTYPE html>
@@ -27,7 +28,8 @@
         <jsp:include page="header.jsp" />
 
         <p id="login_fail">
-            <%= request.getParameter("userid")%>님, 로그인이 실패하였습니다.
+            <% String userid = XSSFilter.Filter(request.getParameter("userid")); %>
+            <%= userid%>님, 로그인이 실패하였습니다.
 
             올바른 사용자 ID와 암호를 사용하여 로그인하시기 바랍니다.
 

@@ -34,10 +34,10 @@ public class Pop3Agent {
     public Pop3Agent() {
     }
 
-    public Pop3Agent(String host, String userid, String password) {
+    public Pop3Agent(String host, String uid, String pad) {
         this.host = host;
-        this.userid = userid;
-        this.password = password;
+        this.userid = uid;
+        this.password = pad;
     }
 
     public boolean validate() {
@@ -216,8 +216,8 @@ public class Pop3Agent {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPassword(String pad) {
+        this.password = pad;
     }
 
     public String getUserid() {

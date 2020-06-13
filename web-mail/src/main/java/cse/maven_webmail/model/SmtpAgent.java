@@ -51,9 +51,7 @@ public class SmtpAgent {
     protected Multipart mp;
 
     private static final Logger logger = LoggerFactory.getLogger(SmtpAgent.class);
-=======
     protected File attachedFile = null;
->>>>>>> 06481a15806221043498e2018e7b54991e9913f2
 
     public SmtpAgent(String host, String userid) {
         this.host = host;
@@ -262,7 +260,7 @@ public class SmtpAgent {
 
             // 메일 전송 완료되었으므로 서버에 저장된
             // 첨부 파일 삭제함
-            /*if (this.file1 != null) {
+            if (this.file1 != null) {
                 File f = new File(this.file1);
                 boolean sentinsertsuccess = savesentmail(f);
                 logger.info("sent mail insert success = " + sentinsertsuccess);
@@ -275,7 +273,7 @@ public class SmtpAgent {
                 if (!f.delete()){
                     logger.error(this.file2 + "not yet2");
                 }
-            }*/
+            }
             status = true;
 
         } catch (Exception ex) {
