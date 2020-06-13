@@ -15,6 +15,7 @@ import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.Pop3Agent;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import javax.naming.NamingException;
 import org.apache.commons.logging.Log;
@@ -89,7 +90,7 @@ public class LoginHandler extends HttpServlet {
                             {
                                 //90일 이하이거나 0일경우 메인 메뉴 페이지로 이동
                                 log.info("main_menu.jsp");
-                                response.sendRedirect("main_menu.jsp");
+                                response.sendRedirect("main_menu.jsp?ps=1&pe=10&no=1");
                             }
                         }
                     } else {

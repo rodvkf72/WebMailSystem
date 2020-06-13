@@ -17,6 +17,14 @@ public class MessageFormatter {
 
     private String userid;  // 파일 임시 저장 디렉토리 생성에 필요
     
+    private int pageStart; // 현재 페이지
+    private int pageEnd; // 마지막 페이지
+    private int totalMail; // 메일 총 개수
+    private int pageNo; // 현재 페이지 번호
+    
+    private int beginPage = 0; // 아래에 뜨는 페이지 첫 시작 번호 
+    private int endPage = 0; // 아래에 뜨는 페이지 마지막 번호 
+    
     private static final Logger logger =  LoggerFactory.getLogger(MessageFormatter.class);
 
     public MessageFormatter(String userid) {
@@ -26,6 +34,8 @@ public class MessageFormatter {
     //getMessageList()에서 사용
     public String getMessageTable(Message[] messages) {
         StringBuilder buffer = new StringBuilder();
+        
+        getPageRange();
 
         // 메시지 제목 보여주기
         buffer.append("<table>");  // table start
@@ -43,25 +53,77 @@ public class MessageFormatter {
             // 메시지 헤더 포맷
             // 추출한 정보를 출력 포맷 사용하여 스트링으로 만들기
             buffer.append("<tr> "
-                    + " <td id=no>" + (i + 1) + " </td> "
+                    + " <td id=no>" + (i + pageStart) + " </td> "
                     + " <td id=sender>" + parser.getFromAddress() + "</td>"
                     + " <td id=subject> "
-                    + " <a href=show_message.jsp?msgid=" + (i + 1) + " title=\"메일 보기\"> "
+                    + " <a href=show_message.jsp?msgid=" + (i + pageStart) + " title=\"메일 보기\"> "
                     + parser.getSubject() + "</a> </td>"
                     + " <td id=date>" + parser.getSentDate() + "</td>"
                     + " <td id=delete>"
                     + "<a href=ReadMail.do?menu="
                     + CommandType.DELETE_MAIL_COMMAND
-                    + "&msgid=" + (i + 1) + "> 삭제 </a>" + "</td>"
+                    + "&msgid=" + (i + pageStart) + "> 삭제 </a>" + "</td>"
                     + " </tr>");
         }
-        
         buffer.append("</table>");
-
+        
+        buffer.append("<a href=\"main_menu.jsp?ps=" + 1 + "&pe=" +10 + "&no="+ 1 +"\">처음으로</a>");
+        logger.info("endPage: "+endPage + "beginPage: " + beginPage);
+        for(int i = endPage; i >= beginPage; i=i-10){
+            
+            String tmpi = changeI(i);
+            buffer.append("<a href=\"main_menu.jsp?ps=" + Integer.toString(endPage - i + 1) + "&pe=" + pageEnd + "&no="+tmpi+"\">"+ nowPage(tmpi) +"</a>");
+        }
+        
+        buffer.append("<a href=\"main_menu.jsp?ps=" + (totalMail-1) + "&pe=" + totalMail + "&no="+ 0+"\">끝으로</a>");
+        
+        
         return buffer.toString();
 //        return "MessageFormatter 테이블 결과";
     }
 
+    private String changeI(int i){
+        i = endPage - i;
+        i = i/10 + 1;
+        
+        String stri = Integer.toString(i);
+        
+        return stri;
+    }
+    
+    private String nowPage(String stri){
+        //i = endPage / 10 - i + 1;
+        
+        if(stri.equals(Integer.toString(pageNo))  ){
+            stri = "<strong>" + stri + "</strong>";
+        }
+        
+        return stri;
+    }
+
+    private void getPageRange(){
+        beginPage = pageStart - 20; // default값
+        endPage = pageStart + 20; //default값
+        
+        if(beginPage < 0){
+            if(beginPage + 20 < 0){
+                beginPage = 0;
+                endPage = 40;
+            }else{
+                beginPage = beginPage + 20;
+                endPage = endPage + 20;
+            }
+        }
+        
+        if(endPage > totalMail){
+            if(endPage - 20 > totalMail){
+                endPage = totalMail;
+            }else{
+                //endPage = endPage - 10;
+            }
+        }
+    }
+    
     //show_message.jsp에서 사용
     public String getMessage(Message message) {
         StringBuilder buffer = new StringBuilder();
@@ -121,4 +183,37 @@ public class MessageFormatter {
         
         return buffer.toString();
     }
+    
+    public int getPageStart() {
+        return pageStart;
+    }
+
+    public void setPageStart(int pageStart) {
+        this.pageStart = pageStart;
+    }
+
+    public int getPageEnd() {
+        return pageEnd;
+    }
+
+    public void setPageEnd(int pageEnd) {
+        this.pageEnd = pageEnd;
+    }
+
+    public int getTotalMail() {
+        return totalMail;
+    }
+
+    public void setTotalMail(int totalMail) {
+        this.totalMail = totalMail;
+    }
+
+    public int getPageNo() {
+        return pageNo;
+    }
+
+    public void setPageNo(int pageNo) {
+        this.pageNo = pageNo;
+    }
+    
 }

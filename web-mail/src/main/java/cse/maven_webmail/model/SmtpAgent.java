@@ -51,9 +51,9 @@ public class SmtpAgent {
     protected Multipart mp;
 
     private static final Logger logger = LoggerFactory.getLogger(SmtpAgent.class);
-=======
+
     protected File attachedFile = null;
->>>>>>> 06481a15806221043498e2018e7b54991e9913f2
+
 
     public SmtpAgent(String host, String userid) {
         this.host = host;

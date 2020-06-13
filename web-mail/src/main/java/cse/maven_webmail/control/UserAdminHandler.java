@@ -256,7 +256,7 @@ public class UserAdminHandler extends HttpServlet {
         successPopUp.append("alert(\"");
         successPopUp.append(alertMessage);
         successPopUp.append("\"); ");
-        successPopUp.append("window.location = \"main_menu.jsp\"; ");
+        successPopUp.append("window.location = \"main_menu.jsp?ps=1&pe=10&no=1\"; ");
         successPopUp.append("}  </script>");
         successPopUp.append("</body></html>");
         return successPopUp.toString();
@@ -279,7 +279,7 @@ public class UserAdminHandler extends HttpServlet {
         successPopUp.append("alert(\"");
         successPopUp.append(alertMessage);
         successPopUp.append("\"); ");
-        successPopUp.append("window.location = \"main_menu.jsp\"; ");
+        successPopUp.append("window.location =\"main_menu.jsp?ps=1&pe=10&no=1\"; ");
         successPopUp.append("}  </script>");
         successPopUp.append("</body></html>");
         return successPopUp.toString();
