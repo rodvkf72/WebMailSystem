@@ -52,6 +52,7 @@ public class getSentMessage {
         buffer.append("보낸 날짜: " + saveDate + " <br>");
         buffer.append("제 &nbsp;&nbsp;&nbsp;  목: " + subject + " <br> <hr>");
 
+        body = body.replaceAll("\r\n","<br>");
         buffer.append(body);
 
         String attachedFile = filename;

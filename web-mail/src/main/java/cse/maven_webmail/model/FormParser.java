@@ -126,11 +126,11 @@ public class FormParser {
                         String fieldName = fi.getFieldName();
                         logger.info("ATTACHED FILE : " + fieldName + " = " + fi.getName());
 
-                        String newFileName = setFileDir(fi.getName());
-                        logger.info("changed file name: " + newFileName);
+                        //String newFileName = setFileDir(fi.getName());
+                        //logger.info("changed file name: " + newFileName);
                         
                         // 절대 경로 저장
-                        setFileName(uploadTargetDir + "/" + newFileName);
+                        setFileName(uploadTargetDir + fi.getName());
                         // setFileName(uploadTargetDir + "/" + newFileName);
                         File fn = new File(fileName);
                         // upload 완료. 추후 메일 전송후 해당 파일을 삭제하도록 해야 함.
@@ -150,6 +150,7 @@ public class FormParser {
      * @param fi
      * @param fileName 
      */
+    /*
     private String setFileDir(String fileName){
         String[] filenametmp = fileName.split("\\."); // 파일 이름을 확장자와 분리
         String newFileName= ""; // 새 파일이름을 저장할 String 변수 
@@ -161,7 +162,7 @@ public class FormParser {
             
             Class.forName(JdbcDriver);
             
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName + "?serverTimezone=UTC", DBInfo.id, DBInfo.pw);;
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName + "?serverTimezone=UTC", DBInfo.id, DBInfo.pw);
             
             // 2. select 로 중복파일 있는지 찾기 
             sql = "SELECT COUNT(*) FROM file WHERE file_realname = \"" + fileName + "\";";
@@ -221,4 +222,5 @@ public class FormParser {
         
         return newFileName;
     }
+*/
 }

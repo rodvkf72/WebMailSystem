@@ -26,6 +26,15 @@
         </div>
 
         <div id="main">
+            <table>
+                <tr>
+                <th> 수신자 </td>
+                <th> 참조 </td>
+                <th> 메일 제목 </td>
+                <th> 본문 </td>
+                <th> 수정</td>
+                </tr>
+            
             <%
                 Connection conn = null;
                 Statement stmt = null;
@@ -61,15 +70,17 @@
                         cc = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') as char)");
                         subj = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') as char)");
                         text = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_text), 'text') as char)");%>
-
+   
             <form method="POST" action="write_mail.jsp">
-                <input type="text" name="number" value="<%=number == null ? "" : number%>" hidden>
-                수신자 : <input type="text" name="to" value="<%=to == null ? "" : to%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
-                참조 : <input type="text" name="cc" value="<%=cc == null ? "" : cc%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
-                메일 제목 : <input type="text" name="subj" value="<%=subj == null ? "" : subj%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
-                본문 : <input type="text" name="text" value="<%=text == null ? "" : text%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;
-                <input type="text" name="temporary" value="TR" hidden>
-                <input type="submit" value="수정">
+               <tr>
+                   <input type="text" name="number" value="<%=number == null ? "" : number%>" hidden>
+                   <td id = to><input type="text" name="to" value="<%=to == null ? "" : to%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;</td>
+                   <td id = cc><input type="text" name="cc" value="<%=cc == null ? "" : cc%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
+                   <td id = subj><input type="text" name="subj" value="<%=subj == null ? "" : subj%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
+                   <td id = body><input type="text" name="text" value="<%=text == null ? "" : text%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
+                   <input type="text" name="temporary" value="TR" hidden>
+                   <td id = submit><input type="submit" value="수정"></td>
+               </tr>
             </form>
 
             <%}
@@ -86,7 +97,7 @@
                     }
                 }
             %>  
-
+            </table>
         </div>
 
         <jsp:include page="footer.jsp" />

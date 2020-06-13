@@ -18,7 +18,7 @@
         
         <span style="color: indigo"> <strong>사용자: <%= session.getAttribute("userid") %> </strong> </span> <br>
 
-        <p> <a href="test.jsp"> 임시 보관함 </a> </p>
+        <p> <a href="temporary.jsp"> 임시 보관함 </a> </p>
         <p> <a href="sentmail.jsp">보낸 메일함</a>
         <p> <a href="main_menu.jsp"> 메일 읽기 </a> </p>
         <p> <a href="write_mail.jsp"> 메일 쓰기 </a> </p>

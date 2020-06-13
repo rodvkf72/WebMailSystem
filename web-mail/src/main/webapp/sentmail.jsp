@@ -26,7 +26,7 @@
             <% String userid = (String)session.getAttribute("userid"); %>
             <%= sentmail.getSentMessageList(userid) %>
         </div>
-         
+         <jsp:include page="footer.jsp" />
      </body>
         
        

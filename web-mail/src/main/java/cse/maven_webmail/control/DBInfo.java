@@ -20,7 +20,7 @@ public class DBInfo {
     public final static String pw = "3456";
     public final static String projectName = "project";
      */
-    2.
+    
     public final static String id = "kms";
     public final static String pw = "alth0223";
     public final static String projectName = "mail";
@@ -30,8 +30,8 @@ public class DBInfo {
     public final static String projectName = "mail";
     */
   
-    public final static String downloadTempDir = "C:/jsp/download/";
-    public final static String uploadTempDir = "C:/jsp/upload/";
+    public final static String downloadTempDir = "C:/temp/download/";
+    public final static String uploadTempDir = "C:/temp/upload/";
   /* 3.
     public final static String id = "root";
     public final static String pw = "    ";

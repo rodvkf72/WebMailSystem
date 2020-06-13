@@ -36,6 +36,7 @@ public class getSentMail {
         
     }
     
+    
     public String getSentMessageList(String userid) throws SQLException, NamingException{
         
         Connection conn = null;
@@ -82,7 +83,7 @@ public class getSentMail {
                     + "CAST(AES_DECRYPT(UNHEX(recipients), 'recipient') AS CHAR), "
                     + "CAST(AES_DECRYPT(UNHEX(message_name), 'message_name') AS CHAR), "
                     + "CAST(AES_DECRYPT(UNHEX(CarbonCopy),'CarbonCopy') AS CHAR), "
-                    + "saveDate FROM sent_mail_inbox WHERE CAST(AES_DECRYPT(UNHEX(sender), 'sender') AS CHAR)='" + userID + "';";
+                    + "saveDate FROM sent_mail_inbox WHERE CAST(AES_DECRYPT(UNHEX(sender), 'sender') AS CHAR)='" + userID + "' order by saveDate desc;";
             
             decrypt_rs = stmt.executeQuery(sql);
 
@@ -104,7 +105,7 @@ public class getSentMail {
                 
                 buffer.append("<tr> "
                         + " <td id=no>" + num + " </td> "
-                        + " <td id=recipients>" + toAddress + "</td>"
+                        + " <td id=sender>" + toAddress + "</td>"
                         + " <td id=cc>" + ccAddress + "</td>"
                         + " <td id=subject> "
                         + " <a href=show_sentmessage.jsp?msgid=" + num + " title=\"메일 보기\"> "
@@ -131,62 +132,6 @@ public class getSentMail {
             conn.close();
          }        
     }
-      /*  
-    public ResultSet connectToDB(String id) throws SQLException{
-        
-        Connection conn = null;
-        Statement stmt = null;
-        String userID = id;
-        ResultSet result = null;
-        
-        log.info(userID);
-
-        try {
-            //DBCP데이터베이스 기법 사용
-            //데이터베이스 정보는 context.xml에 있음
-            //Context 와 Datasource 검색
-            //log.info("database connect");
-            String JNDIname = "java:/comp/env/jdbc/Webmail";
-            //log.info(agent.getUserid());
-
-            javax.naming.Context ctx = new javax.naming.InitialContext();
-            javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
-
-            //Connection 객체 생성
-            conn = ds.getConnection();
-            //Statement 객체 생성
-            stmt = conn.createStatement();
-
-            if (conn == null) {
-                throw new Exception("DB Connect Fail");
-            }
-            //stmt = conn.createStatement();
-            //복호화
-            //ResultSet rs = stmt.executeQuery("SELECT * FROM test WHERE t_user");
-
-            String sql = "SELECT num, "
-                    + "CAST(AES_DECRYPT(UNHEX(recipients), 'recipient') AS CHAR), "
-                    + "CAST(AES_DECRYPT(UNHEX(message_name), 'message_name') AS CHAR), "
-                    + "CAST(AES_DECRYPT(UNHEX(CarbonCopy),'CarbonCopy') AS CHAR), "
-                    + "saveDate FROM sent_mail_inbox WHERE CAST(AES_DECRYPT(UNHEX(sender), 'sender') AS CHAR)='" + userID + "';";
-            
-            result = stmt.executeQuery(sql);
-            
-          return result;
-         }
-        catch(Exception ex){
-            log.info("database connect failed");
-            log.info(ex.getMessage());
-            return result;
-        }
-        finally{
-            //result.close();
-            stmt.close();
-            conn.close();
-            //return result;
-        }
-      }
-    */
 }
     
   

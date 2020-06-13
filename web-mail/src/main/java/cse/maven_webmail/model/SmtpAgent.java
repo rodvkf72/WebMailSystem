@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.Properties;
 import java.util.logging.Level;
 import javax.activation.DataHandler;
@@ -48,6 +49,7 @@ public class SmtpAgent {
     protected String body = null;
     protected String file1 = null;
     protected File attachedFile = null;
+    protected File f = null;
 
     private static final Logger logger =  LoggerFactory.getLogger(SmtpAgent.class);
     
@@ -165,6 +167,7 @@ public class SmtpAgent {
 
         try {
             SMTPMessage msg = new SMTPMessage(session);
+           
 
             // msg.setFrom(new InternetAddress(this.userid + "@" + this.host));
             msg.setFrom(new InternetAddress(this.userid));  // 200102 LJM - 테스트 목적으로 수정
@@ -221,16 +224,23 @@ public class SmtpAgent {
 
             // 메일 전송 완료되었으므로 서버에 저장된
             // 첨부 파일 삭제함
+            f = new File(this.file1);
+           logger.info("save the sentmail start");
+            boolean sentinsertsuccess = savesentmail();
+            logger.info("sent mail insert success = " + sentinsertsuccess);
+            
             if (this.file1 != null) {
-                File f = new File(this.file1);
-                boolean sentinsertsuccess = savesentmail(f);
-                logger.info("sent mail insert success = " + sentinsertsuccess);
                 if (!f.delete()) {
                     logger.error(this.file1 + " 파일 삭제가 제대로 안 됨.");
                 }
             }
             //보낸 메일함에 안들어가도 전송 실패로 만들도록 고쳐야 함.
-            status = true;
+            if(!sentinsertsuccess)
+                status = false;
+            else{
+                 status = true;
+            }
+            
             
         } catch (Exception ex) {
             logger.error("sendMessage() error: " + ex);
@@ -239,12 +249,12 @@ public class SmtpAgent {
         }
     }  // sendMessage()
 
-    boolean savesentmail(File file) throws SQLException{
+    boolean savesentmail() throws SQLException{
         
         Log log = LogFactory.getLog(SmtpAgent.class);
         Statement stmt = null;
         Connection conn = null;
-        
+              
         try{
             String userId = userid;
             String toAddress = to;
@@ -252,11 +262,8 @@ public class SmtpAgent {
             String subject = subj;
             String text = body;
             String fname = file1;
-            String filename = fname.substring(fname.lastIndexOf("/")+1);
-            File attachedfile = file;
-            int fileLength = (int) attachedfile.length();
-            
-            InputStream ins = new FileInputStream(attachedfile);
+            String filename = "";
+            File attachedfile = null;
             
             
             //DBCP데이터베이스 기법 사용
@@ -266,7 +273,8 @@ public class SmtpAgent {
             
             String JNDIname = "java:/comp/env/jdbc/Webmail";
             log.info(userId);
-            log.info(filename);
+            log.info(fname);
+           // log.info(filename);
             
             javax.naming.Context ctx = new javax.naming.InitialContext();
             javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
@@ -286,50 +294,41 @@ public class SmtpAgent {
                     + "HEX(AES_ENCRYPT('" + text + "', 'message_body')),"
                     + "?, ?, + now());";
 
-
-           
             //String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_body, saveDate) VALUES(HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)),HEX(AES_ENCRYPT(?, ?)), ?, now());";
            // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";            
            
            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
-            /*
-            pstmt.setString(1, userId);
-            pstmt.setString(2, "sender");
-            pstmt.setString(3, toAddress);
-            pstmt.setString(4, "recipeint");
-            pstmt.setString(5, ccAddress);
-            pstmt.setString(6, "CarbonCopy");
-            pstmt.setString(7, subject);
-            pstmt.setString(8, "message_name");
-            pstmt.setString(9, text);
-            pstmt.setString(10, "message_body");
- */
-            pstmt.setString(1, filename);
-            pstmt.setBinaryStream(2, ins, fileLength);
+
+           if(f == null){
+              
+                pstmt.setNull(1, Types.VARCHAR);
+               // pstmt.setBinaryStream(2, ins, fileLength);
+                pstmt.setNull(2, Types.BLOB);
+            }
+            else{
+                attachedfile = f;
+                int fileLength = (int) attachedfile.length();
+                InputStream ins = new FileInputStream(attachedfile);
+                
+                filename = fname.substring(fname.lastIndexOf("/")+1);
+                log.info(filename);
+                pstmt.setString(1, filename);
+                pstmt.setBinaryStream(2, ins, fileLength);
+            }
+            
             
             log.info(sql);
             
             pstmt.execute();
-            /*
-            if(count>0)
-            {
-                log.info(count);
-                log.info("insert success");
-                return true;
-            }
-            else
-            {
-                log.info(count);
-                log.info("failed..");
-                return false;
-            }
-            */
+            
             log.info("database connect success");
             return true;
         }
         catch(Exception ex){
             log.info("database connect failed");
-            log.info(ex.getMessage());
+            logger.info(ex.getMessage());
+            //log.info(ex.getMessage());
+            
             return false;
         }
         finally{
