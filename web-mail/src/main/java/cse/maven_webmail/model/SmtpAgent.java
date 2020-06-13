@@ -47,7 +47,6 @@ public class SmtpAgent {
     protected String subj = null;
     protected String body = null;
     protected String file1 = null;
-<<<<<<< HEAD
     protected String file2 = null;
     protected Multipart mp;
 
@@ -270,18 +269,13 @@ public class SmtpAgent {
                 if (!f.delete()) {
                     logger.error(this.file1 + " not yet1.");
                 }
-<<<<<<< HEAD
-            } 
+            }
             if (this.file2 != null) {
                 File f = new File(this.file2);
                 if (!f.delete()){
                     logger.error(this.file2 + "not yet2");
                 }
             }*/
-=======
-            }
-            //보낸 메일함에 안들어가도 전송 실패로 만들도록 고쳐야 함.
->>>>>>> 06481a15806221043498e2018e7b54991e9913f2
             status = true;
 
         } catch (Exception ex) {
@@ -292,11 +286,11 @@ public class SmtpAgent {
     }  // sendMessage()
 
     boolean savesentmail(File file) throws SQLException{
-        
+
         Log log = LogFactory.getLog(SmtpAgent.class);
         Statement stmt = null;
         Connection conn = null;
-        
+
         try{
             String userId = userid;
             String toAddress = to;
@@ -307,22 +301,22 @@ public class SmtpAgent {
             String filename = fname.substring(fname.lastIndexOf("/")+1);
             File attachedfile = file;
             int fileLength = (int) attachedfile.length();
-            
+
             InputStream ins = new FileInputStream(attachedfile);
-            
-            
+
+
             //DBCP데이터베이스 기법 사용
             //데이터베이스 정보는 context.xml에 있음
             //Context 와 Datasource 검색
             log.info("try to connect the database to save sent mail...");
-            
+
             String JNDIname = "java:/comp/env/jdbc/Webmail";
             log.info(userId);
             log.info(filename);
-            
+
             javax.naming.Context ctx = new javax.naming.InitialContext();
             javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
-            
+
             //Connection 객체 생성
             conn = ds.getConnection();
             //Statement 객체 생성
@@ -339,10 +333,10 @@ public class SmtpAgent {
                     + "?, ?, + now());";
 
 
-           
+
             //String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_body, saveDate) VALUES(HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)),HEX(AES_ENCRYPT(?, ?)), ?, now());";
-           // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";            
-           
+           // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";
+
            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
             /*
             pstmt.setString(1, userId);
@@ -358,9 +352,9 @@ public class SmtpAgent {
  */
             pstmt.setString(1, filename);
             pstmt.setBinaryStream(2, ins, fileLength);
-            
+
             log.info(sql);
-            
+
             pstmt.execute();
             /*
             if(count>0)
@@ -389,9 +383,9 @@ public class SmtpAgent {
                 stmt.close();
              if (conn != null)
                  conn.close();
-             
+
         }
-        
+
     }
 
 
