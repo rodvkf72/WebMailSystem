@@ -6,6 +6,8 @@ package cse.maven_webmail.model;
 
 import cse.maven_webmail.control.CommandType;
 import javax.mail.Message;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -14,11 +16,14 @@ import javax.mail.Message;
 public class MessageFormatter {
 
     private String userid;  // 파일 임시 저장 디렉토리 생성에 필요
+    
+    private static final Logger logger =  LoggerFactory.getLogger(MessageFormatter.class);
 
     public MessageFormatter(String userid) {
         this.userid = userid;
     }
 
+    //getMessageList()에서 사용
     public String getMessageTable(Message[] messages) {
         StringBuilder buffer = new StringBuilder();
 
@@ -50,12 +55,14 @@ public class MessageFormatter {
                     + "&msgid=" + (i + 1) + "> 삭제 </a>" + "</td>"
                     + " </tr>");
         }
+        
         buffer.append("</table>");
 
         return buffer.toString();
 //        return "MessageFormatter 테이블 결과";
     }
 
+    //show_message.jsp에서 사용
     public String getMessage(Message message) {
         StringBuilder buffer = new StringBuilder();
 
@@ -73,6 +80,9 @@ public class MessageFormatter {
         buffer.append(parser.getBody());
 
         String attachedFile = parser.getFileName();
+        String attachedFile2 = parser.getFileName2();
+        logger.info("attached test : " + attachedFile);
+        logger.info("attached test 2 : " + attachedFile2);
         if (attachedFile != null) {
             buffer.append("<br> <hr> 첨부파일: <a href=ReadMail.do?menu="
                     + CommandType.DOWNLOAD_COMMAND
@@ -80,7 +90,14 @@ public class MessageFormatter {
                     + "&filename=" + attachedFile.replaceAll(" ", "%20")
                     + " target=_top> " + attachedFile + "</a> <br>");
         }
-
+        if (attachedFile2 != null) {
+            buffer.append("<br> <hr> 첨부파일2: <a href=ReadMail.do?menu="
+                    + CommandType.DOWNLOAD_COMMAND
+                    + "&userid=" + this.userid
+                    + "&filename=" + attachedFile2.replaceAll(" ", "%20")
+                    + " target=_top> " + attachedFile2 + "</a> <br>");
+        }
+        
         return buffer.toString();
     }
     

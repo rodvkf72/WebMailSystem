@@ -61,7 +61,8 @@
                     
                     <tr>
                         <td>첨부 파일</td>
-                        <td> <input type="file" id="file1" name="file1" size="40">  </td>
+                        <td> <input type="file" id="file1" name="file1" size="40"> </br>
+                             <input type="file" id="file2" name="file2" size="40"> </td>
                     </tr>
                     <input type="text" name="temp" id="temp" value="<%=request.getParameter("temporary") == null ? "" : request.getParameter("temporary")%>" hidden>
                     <tr>

@@ -30,6 +30,10 @@ public class MessageParser {
     private String subject;
     private String body;
     private String fileName;
+    private String fileName2;
+    private int count = 0;
+    private String tempfile;
+    
     private final String downloadTempDir = DBInfo.downloadTempDir; // DBInfo 클래스에서 각자에 맞게 수정해주세요.
     
     private String userid;
@@ -78,14 +82,51 @@ public class MessageParser {
     // ref: http://www.oracle.com/technetwork/java/faq-135477.html#readattach
     private void getPart(Part p) throws Exception {
         String disp = p.getDisposition();
-
+        
         if (disp != null && (disp.equalsIgnoreCase(Part.ATTACHMENT)
                 || disp.equalsIgnoreCase(Part.INLINE))) {  // 첨부 파일
 //            fileName = p.getFileName();
-            fileName = MimeUtility.decodeText(p.getFileName());
+
+                fileName = MimeUtility.decodeText(p.getFileName());
+                
+                if((fileName != null) && (count == 0)) {
+                    tempfile = fileName;
+                    count++;
+                    logger.info("count check 1");
+                    String tempUserDir = this.downloadTempDir + this.userid;
+                    File dir = new File(tempUserDir);
+                    if (!dir.exists()) {
+                        dir.mkdir();
+                    }
+                    String filename = MimeUtility.decodeText(p.getFileName());
+                    DataHandler dh = p.getDataHandler();
+                    FileOutputStream fos = new FileOutputStream(tempUserDir + "/" + filename);
+                    dh.writeTo(fos);
+                    fos.flush();
+                    fos.close();
+                } else if((fileName != null) && (count == 1)){
+                    count++;
+                    logger.info("count check 2");
+                    
+                    fileName2 = fileName;
+                    String tempUserDir = this.downloadTempDir + this.userid;
+                    File dir = new File(tempUserDir);
+                    if (!dir.exists()) {
+                        dir.mkdir();
+                    }
+                    String filename2 = MimeUtility.decodeText(p.getFileName());
+                    DataHandler dh2 = p.getDataHandler();
+                    FileOutputStream fos2 = new FileOutputStream(tempUserDir + "/" + filename2);
+                    dh2.writeTo(fos2);
+                    fos2.flush();
+                    fos2.close();
+                }
+                
+            //fileName = MimeUtility.decodeText(p.getFileName());
+            //fileName2 = MimeUtility.decodeText(p.getFileName());
             //fileName = "diet.png";
 //            fileName = fileName.replaceAll(" ", "%20");
-            if (fileName != null) {
+           /* if (fileName != null) {
                 //logger.info("MessageParser.getPart() : file = " + fileName);
                 // 첨부 파일을 서버의 내려받기 임시 저장소에 저장
                 String tempUserDir = this.downloadTempDir + this.userid;
@@ -102,8 +143,8 @@ public class MessageParser {
                 FileOutputStream fos = new FileOutputStream(tempUserDir + "/" + filename);
                 dh.writeTo(fos);
                 fos.flush();
-                fos.close();
-            }
+                fos.close();*/
+            
         } else {  // 메일 본문
             if (p.isMimeType("text/*")) {
                 body = (String) p.getContent();
@@ -126,6 +167,7 @@ public class MessageParser {
                 }
             }
         }
+        fileName = tempfile;
     }
 
     /*
@@ -179,9 +221,9 @@ public class MessageParser {
     public String getFileName() {
         return fileName;
     }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
+    
+    public String getFileName2() {
+        return fileName2;
     }
 
     public String getFromAddress() {

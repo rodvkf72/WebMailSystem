@@ -14,22 +14,25 @@ package cse.maven_webmail.control;
  * @author 김희정
  */
 public class DBInfo {
-    /* 1. hjk */
+    /* 1. hjk
     public final static String id = "root";
+
+    public final static String pw = "3456";
+    public final static String projectName = "project";
+     */
+    2.
+    public final static String id = "kms";
+    public final static String pw = "alth0223";
+    public final static String projectName = "mail";
+ 
+    /*
     public final static String pw = "1463";
     public final static String projectName = "mail";
+    */
+  
     public final static String downloadTempDir = "C:/jsp/download/";
     public final static String uploadTempDir = "C:/jsp/upload/";
-    
-    /* 2.
-    public final static String id = "root";
-    public final static String pw = "    ";
-    public final static String projectName = "mail";
-    public final static String downloadTempDir = "C:/temp/download/";
-    public final static String uploadTempDir = "C:/temp/upload/";
-    */
-    
-    /* 3.
+  /* 3.
     public final static String id = "root";
     public final static String pw = "    ";
     public final static String projectName = "mail";

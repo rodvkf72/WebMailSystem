@@ -208,6 +208,7 @@ public class UserAdminAgent {
         byte[] messageBuffer = new byte[1024];
 
         logger.info("changePassword() called");
+
         if (!isConnected) {
             return status;
         }
@@ -222,7 +223,9 @@ public class UserAdminAgent {
             //if (is.available() > 0) {
             is.read(messageBuffer);
             String recvMessage = new String(messageBuffer);
+
             logger.info(recvMessage);
+
             //}
             // 3: 기존 메일사용자 여부 확인
             if (recvMessage.contains("reset")) {
@@ -232,7 +235,8 @@ public class UserAdminAgent {
             }
             // 4: 연결 종료
             quit();
-            //System.out.flush();  // for test
+
+            System.out.flush();  // for test
             socket.close();
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -242,7 +246,7 @@ public class UserAdminAgent {
             return status;
         }
     }  // changePassword()
-   
+
     public boolean verify(String userid) {
         boolean status = false;
         byte[] messageBuffer = new byte[1024];

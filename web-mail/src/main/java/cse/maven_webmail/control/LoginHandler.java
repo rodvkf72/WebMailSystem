@@ -16,6 +16,7 @@ import cse.maven_webmail.model.Pop3Agent;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import javax.naming.NamingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
@@ -126,7 +127,7 @@ public class LoginHandler extends HttpServlet {
 
     //데이터베이스에서 마지막으로 비밀번호를 변경한 날짜로부터 몇일이 지났는지 받아온다.
 
-    int getPwdChangedDate(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String userid, Log log){
+    int getPwdChangedDate(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String userid, Log log) throws SQLException{
         try{
             //DBCP데이터베이스 기법 사용
             //데이터베이스 정보는 context.xml에 있음
@@ -135,7 +136,7 @@ public class LoginHandler extends HttpServlet {
             log.info("database connect");
             String JNDIname = "java:/comp/env/jdbc/Webmail";
             log.info(userid);
-            
+            String userID = userid;
             javax.naming.Context ctx = new javax.naming.InitialContext();
             javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
             
@@ -145,11 +146,10 @@ public class LoginHandler extends HttpServlet {
             Statement stmt = conn.createStatement();
             
             //SQL 질의 실행
-            String sql = "select datediff(now(), mDate), mDate from backup_usersupdate where username = ? order by mDate desc limit 1";
-
-            //log.info(sql);
-            java.sql.PreparedStatement pstmt = conn.prepareCall(sql);
-            pstmt.setString(1, userid);
+            String sql = "select datediff(now(), mDate), mDate from backup_usersupdate where username = "
+                    + "'" + userID + "'"
+                    +" order by mDate desc limit 1";
+            log.info(sql);
             ResultSet rs = stmt.executeQuery(sql);
             
             int resultdate;
@@ -161,20 +161,21 @@ public class LoginHandler extends HttpServlet {
             }
             else
                 resultdate=0;
-
             
-            rs.close();
             stmt.close();
             conn.close();
             
+            
             return resultdate;
         }
-        catch(Exception ex){
+        catch(SQLException | NamingException ex){
             log.info("database connect failed");
+            log.info(ex.getMessage());
             out.println("오류가 발생했습니다.(발생 오류:" + ex.getMessage()+")");
             return 0;
         }
     }
+
 // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
 
     /**

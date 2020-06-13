@@ -83,10 +83,12 @@ public class ReadMailHandler extends HttpServlet {
             request.setCharacterEncoding("UTF-8");
             // LJM 041203 - 아래와 같이 해서 한글파일명 제대로 인식되는 것 확인했음.
             String fileName = request.getParameter("filename");
+            //String outfileName = XSSFilter.Filter(">>>>>> DOWNLOAD: file name = " + fileName);
+
             String sentDate = request.getParameter("date");
             //String outfileName = XSSFilter.Filter(">>>>>> DOWNLOAD: file name = " + fileName);
             //위 소스 있으니까 에러가 생겨서 주석처리 했습니다ㅜㅜ 
-            
+
             //logger.info(outfileName);
             // fileName에 있는 ' '는 '+'가 파라미터로 전송되는 과정에서 변한 것이므로
             // 다시 변환시켜줌.
