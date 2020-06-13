@@ -30,8 +30,8 @@ public class DBInfo {
     public final static String projectName = "mail";
     */
 
-    public final static String downloadTempDir = "C:/temp/download/";
-    public final static String uploadTempDir = "C:/temp/upload/";
+    public final static String downloadTempDir = "C:/jsp/download/";
+    public final static String uploadTempDir = "C:/jsp/upload";
   /* 3.
     public final static String id = "root";
     public final static String pw = "    ";

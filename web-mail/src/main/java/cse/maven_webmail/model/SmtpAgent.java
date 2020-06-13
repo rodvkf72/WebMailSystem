@@ -52,14 +52,8 @@ public class SmtpAgent {
     protected Multipart mp;
 
     private static final Logger logger = LoggerFactory.getLogger(SmtpAgent.class);
-<<<<<<< HEAD
-    protected File attachedFile = null;
-=======
-
     protected File attachedFile = null;
     protected File f = null;
-
->>>>>>> 138c8473369c59ac71a1847f6a789a2642925647
 
     public SmtpAgent(String host, String userid) {
         this.host = host;
@@ -188,7 +182,6 @@ public class SmtpAgent {
 
             mp = new MimeMultipart();
 
-
             Runnable r = new Inner(this.file1, mp);
             Runnable r2 = new Inner(this.file2, mp);
             Thread t = new Thread(r);
@@ -259,7 +252,6 @@ public class SmtpAgent {
                 a2.setFileName(MimeUtility.encodeText(fileName2, "UTF-8", "B"));
                 mp.addBodyPart(a2);
             }*/
-
             // 첨부 파일 추가
             t.join();
             t2.join();
@@ -270,16 +262,11 @@ public class SmtpAgent {
 
             // 메일 전송 완료되었으므로 서버에 저장된
             // 첨부 파일 삭제함
-<<<<<<< HEAD
             if (this.file1 != null) {
-=======
 
-            f = new File(this.file1);
-           logger.info("save the sentmail start");
-            boolean sentinsertsuccess = savesentmail();
-            logger.info("sent mail insert success = " + sentinsertsuccess);
-            
-            /*if (this.file1 != null) {
+                f = new File(this.file1);
+
+                /*if (this.file1 != null) {
 >>>>>>> 138c8473369c59ac71a1847f6a789a2642925647
                 File f = new File(this.file1);
                 boolean sentinsertsuccess = savesentmail(f);
@@ -296,14 +283,12 @@ public class SmtpAgent {
             else{
                  status = true;
             }
-            
-            
-            if (this.file2 != null) {
-                File f = new File(this.file2);
-                if (!f.delete()){
-                    logger.error(this.file2 + "not yet2");
-                }
+                 */
             }
+            logger.info("save the sentmail start");
+            boolean sentinsertsuccess = savesentmail();
+            logger.info("sent mail insert success = " + sentinsertsuccess);
+
             status = true;
 
         } catch (Exception ex) {
@@ -313,13 +298,13 @@ public class SmtpAgent {
         }
     }  // sendMessage()
 
-    boolean savesentmail() throws SQLException{
-        
+    boolean savesentmail() throws SQLException {
+
         Log log = LogFactory.getLog(SmtpAgent.class);
         Statement stmt = null;
         Connection conn = null;
 
-        try{
+        try {
             String userId = userid;
             String toAddress = to;
             String ccAddress = cc;
@@ -329,16 +314,15 @@ public class SmtpAgent {
 
             String filename = "";
             File attachedfile = null;
-            
-        /*
+
+            /*
             String filename = fname.substring(fname.lastIndexOf("/")+1);
             File attachedfile = file;
        
             int fileLength = (int) attachedfile.length();
 
             InputStream ins = new FileInputStream(attachedfile);
- */
-
+             */
             //DBCP데이터베이스 기법 사용
             //데이터베이스 정보는 context.xml에 있음
             //Context 와 Datasource 검색
@@ -348,7 +332,7 @@ public class SmtpAgent {
             log.info(userId);
 
             javax.naming.Context ctx = new javax.naming.InitialContext();
-            javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
+            javax.sql.DataSource ds = (javax.sql.DataSource) ctx.lookup(JNDIname);
 
             //Connection 객체 생성
             conn = ds.getConnection();
@@ -356,7 +340,6 @@ public class SmtpAgent {
             stmt = conn.createStatement();
 
             //SQL 질의 실행
-
             String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_name, file_body, saveDate) VALUES ("
                     + "HEX(AES_ENCRYPT('" + userId + "', 'sender')),"
                     + "HEX(AES_ENCRYPT('" + toAddress + "', 'recipient')),"
@@ -366,50 +349,47 @@ public class SmtpAgent {
                     + "?, ?, + now());";
 
             //String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_body, saveDate) VALUES(HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)),HEX(AES_ENCRYPT(?, ?)), ?, now());";
-           // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";
+            // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 
-           java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            if (f == null) {
 
-           if(f == null){
-              
                 pstmt.setNull(1, Types.VARCHAR);
-               // pstmt.setBinaryStream(2, ins, fileLength);
+                // pstmt.setBinaryStream(2, ins, fileLength);
                 pstmt.setNull(2, Types.BLOB);
-            }
-            else{
+            } else {
                 attachedfile = f;
                 int fileLength = (int) attachedfile.length();
                 InputStream ins = new FileInputStream(attachedfile);
-                
-                filename = fname.substring(fname.lastIndexOf("/")+1);
+
+                filename = fname.substring(fname.lastIndexOf("/") + 1);
                 log.info(filename);
                 pstmt.setString(1, filename);
                 pstmt.setBinaryStream(2, ins, fileLength);
             }
-           
+
             log.info(sql);
 
             pstmt.execute();
-            
+
             log.info("database connect success");
             return true;
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             log.info("database connect failed");
             logger.info(ex.getMessage());
             //log.info(ex.getMessage());
-            
+
             return false;
-        }
-        finally{
-             if (stmt != null)
+        } finally {
+            if (stmt != null) {
                 stmt.close();
-             if (conn != null)
-                 conn.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
 
         }
 
     }
-
 
 }
