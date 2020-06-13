@@ -125,3 +125,10 @@ a:hover {
     padding: 10px;
     clear: left;
 }
+
+@media (max-width:768px){
+    /*모바일에서 사용될 스타일*/
+    #footer{
+        color: blue;
+    }
+}

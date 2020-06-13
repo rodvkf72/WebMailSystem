@@ -48,11 +48,15 @@ public class SmtpAgent {
     protected String subj = null;
     protected String body = null;
     protected String file1 = null;
+    protected String file2 = null;
+    protected Multipart mp;
+
+    private static final Logger logger = LoggerFactory.getLogger(SmtpAgent.class);
+
     protected File attachedFile = null;
     protected File f = null;
 
-    private static final Logger logger =  LoggerFactory.getLogger(SmtpAgent.class);
-    
+
     public SmtpAgent(String host, String userid) {
         this.host = host;
         this.userid = userid;
@@ -113,26 +117,36 @@ public class SmtpAgent {
     public void setFile1(String file1) {
         this.file1 = file1;
     }
-    
-    public class Inner implements Runnable{
-        String file1;
-        Multipart mp;
 
-        public Inner(String file1, Multipart mp){
-            this.file1 = file1;
-            this.mp = mp;
+    public String getFile2() {
+        return file2;
+    }
+
+    public void setFile2(String file2) {
+        this.file2 = file2;
+    }
+
+    public class Inner implements Runnable {
+
+        String file;
+        Multipart mtp;
+
+        public Inner(String file, Multipart mp) {
+            this.file = file;
+            this.mtp = mp;
         }
-        public void run(){
-            if (this.file1 != null) {
+
+        public void run() {
+            if (this.file != null) {
                 MimeBodyPart a1 = new MimeBodyPart();
-                DataSource src = new FileDataSource(this.file1);
+                DataSource src = new FileDataSource(this.file);
                 try {
                     a1.setDataHandler(new DataHandler(src));
                 } catch (MessagingException ex) {
                     java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                int index = this.file1.lastIndexOf('/');
-                String fileName = this.file1.substring(index + 1);
+                int index = this.file.lastIndexOf('/');
+                String fileName = this.file.substring(index + 1);
                 try {
                     // "B": base64, "Q": quoted-printable
                     a1.setFileName(MimeUtility.encodeText(fileName, "UTF-8", "B"));
@@ -142,7 +156,7 @@ public class SmtpAgent {
                     java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 try {
-                    mp.addBodyPart(a1);
+                    mtp.addBodyPart(a1);
                 } catch (MessagingException ex) {
                     java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -153,7 +167,7 @@ public class SmtpAgent {
     // LJM 100418 -  현재 로그인한 사용자의 이메일 주소를 반영하도록 수정되어야 함. - test only
     // LJM 100419 - 일반 웹 서버와의 SMTP 동작시 setFrom() 함수 사용 필요함.
     //              없을 경우 메일 전송이 송신주소가 없어서 걸러짐.
-    public boolean sendMessage() {
+    public boolean sendMessage() throws SQLException {
         boolean status = false;
 
         // 1. property 설정
@@ -167,12 +181,23 @@ public class SmtpAgent {
 
         try {
             SMTPMessage msg = new SMTPMessage(session);
-           
 
+            mp = new MimeMultipart();
+
+
+            Runnable r = new Inner(this.file1, mp);
+            Runnable r2 = new Inner(this.file2, mp);
+            Thread t = new Thread(r);
+            Thread t2 = new Thread(r2);
+            t.start();
+            t2.start();
+            //Multipart mp = new MimeMultipart();
+            //Runnable r = new Inner(this.file1, mp);
+            //Thread t = new Thread(r);
+            //t.start();
             // msg.setFrom(new InternetAddress(this.userid + "@" + this.host));
             msg.setFrom(new InternetAddress(this.userid));  // 200102 LJM - 테스트 목적으로 수정
             //msg.setFrom(new InternetAddress("jongmin@deu.ac.kr"));
-
 
             // setRecipient() can be called repeatedly if ';' or ',' exists
             if (this.to.indexOf(';') != -1) {
@@ -184,7 +209,6 @@ public class SmtpAgent {
 //            if (!getCc().equals("")) {
 //                msg.setRecipients(Message.RecipientType.CC, this.cc);
 //            }
-
             if (this.cc.length() > 1) {
                 if (this.cc.indexOf(';') != -1) {
                     this.cc = this.cc.replaceAll(";", ",");
@@ -208,15 +232,33 @@ public class SmtpAgent {
             //mbp.setHeader("Content-Type", "text/plain; charset=euc-kr");
             //mbp.setHeader("Content-Transfer-Encoding", "8bit");
             mbp.setText(this.body);
-
-            Multipart mp = new MimeMultipart();
             mp.addBodyPart(mbp);
 
-            Runnable r = new Inner(this.file1, mp);
-            Thread t = new Thread(r);
-            t.start();
+            /*if (this.file1 != null) {
+                logger.info("tlqkf1");
+                MimeBodyPart a1 = new MimeBodyPart();
+                DataSource src = new FileDataSource(this.file1);
+                a1.setDataHandler(new DataHandler(src));
+                int index = this.file1.lastIndexOf('/');
+                String fileName = this.file1.substring(index + 1);
+                a1.setFileName(MimeUtility.encodeText(fileName, "UTF-8", "B"));
+                mp.addBodyPart(a1);
+            }
+
+            if (this.file2 != null) {
+                logger.info("tlqkf2");
+                MimeBodyPart a2 = new MimeBodyPart();
+                DataSource src2 = new FileDataSource(this.file2);
+                a2.setDataHandler(new DataHandler(src2));
+                int index2 = this.file2.lastIndexOf('/');
+                String fileName2 = this.file2.substring(index2 + 1);
+                a2.setFileName(MimeUtility.encodeText(fileName2, "UTF-8", "B"));
+                mp.addBodyPart(a2);
+            }*/
+
             // 첨부 파일 추가
             t.join();
+            t2.join();
             msg.setContent(mp);
 
             // 메일 전송
@@ -224,16 +266,22 @@ public class SmtpAgent {
 
             // 메일 전송 완료되었으므로 서버에 저장된
             // 첨부 파일 삭제함
+
             f = new File(this.file1);
            logger.info("save the sentmail start");
             boolean sentinsertsuccess = savesentmail();
             logger.info("sent mail insert success = " + sentinsertsuccess);
             
-            if (this.file1 != null) {
+            /*if (this.file1 != null) {
+                File f = new File(this.file1);
+                boolean sentinsertsuccess = savesentmail(f);
+                logger.info("sent mail insert success = " + sentinsertsuccess);
+
                 if (!f.delete()) {
-                    logger.error(this.file1 + " 파일 삭제가 제대로 안 됨.");
+                    logger.error(this.file1 + " not yet1.");
                 }
             }
+
             //보낸 메일함에 안들어가도 전송 실패로 만들도록 고쳐야 함.
             if(!sentinsertsuccess)
                 status = false;
@@ -242,6 +290,14 @@ public class SmtpAgent {
             }
             
             
+            if (this.file2 != null) {
+                File f = new File(this.file2);
+                if (!f.delete()){
+                    logger.error(this.file2 + "not yet2");
+                }
+            }*/
+            status = true;
+
         } catch (Exception ex) {
             logger.error("sendMessage() error: " + ex);
         } finally {
@@ -254,7 +310,7 @@ public class SmtpAgent {
         Log log = LogFactory.getLog(SmtpAgent.class);
         Statement stmt = null;
         Connection conn = null;
-              
+
         try{
             String userId = userid;
             String toAddress = to;
@@ -262,23 +318,30 @@ public class SmtpAgent {
             String subject = subj;
             String text = body;
             String fname = file1;
+
             String filename = "";
             File attachedfile = null;
             
-            
+        /*
+            String filename = fname.substring(fname.lastIndexOf("/")+1);
+            File attachedfile = file;
+       
+            int fileLength = (int) attachedfile.length();
+
+            InputStream ins = new FileInputStream(attachedfile);
+ */
+
             //DBCP데이터베이스 기법 사용
             //데이터베이스 정보는 context.xml에 있음
             //Context 와 Datasource 검색
             log.info("try to connect the database to save sent mail...");
-            
+
             String JNDIname = "java:/comp/env/jdbc/Webmail";
             log.info(userId);
-            log.info(fname);
-           // log.info(filename);
-            
+
             javax.naming.Context ctx = new javax.naming.InitialContext();
             javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
-            
+
             //Connection 객체 생성
             conn = ds.getConnection();
             //Statement 객체 생성
@@ -295,8 +358,8 @@ public class SmtpAgent {
                     + "?, ?, + now());";
 
             //String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_body, saveDate) VALUES(HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)),HEX(AES_ENCRYPT(?, ?)), ?, now());";
-           // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";            
-           
+           // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";
+
            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 
            if(f == null){
@@ -315,10 +378,9 @@ public class SmtpAgent {
                 pstmt.setString(1, filename);
                 pstmt.setBinaryStream(2, ins, fileLength);
             }
-            
-            
+           
             log.info(sql);
-            
+
             pstmt.execute();
             
             log.info("database connect success");
@@ -336,9 +398,9 @@ public class SmtpAgent {
                 stmt.close();
              if (conn != null)
                  conn.close();
-             
+
         }
-        
+
     }
 
 

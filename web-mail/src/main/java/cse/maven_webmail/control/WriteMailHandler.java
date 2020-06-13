@@ -94,6 +94,8 @@ public class WriteMailHandler extends HttpServlet {
         // 4. SmtpAgent 객체에 메일 관련 정보 설정
         SmtpAgent agent = new SmtpAgent(host, userid);
         String fileName = parser.getFileName();
+        String fileName2 = parser.getFileName2();
+        logger.info("file name check : " + fileName);
 
         agent.setTo(parser.getToAddress());
         agent.setCc(parser.getCcAddress());
@@ -102,9 +104,15 @@ public class WriteMailHandler extends HttpServlet {
         logger.debug("WriteMailHandler.sendMessage() : fileName = " + fileName);
 
         if (fileName != null) {
+            logger.info("wpqkf 1 : " + fileName);
             agent.setFile1(fileName);
-            
-            }
+
+        }
+        if (fileName2 != null) {
+            logger.info("wpqkf 2 : " + fileName2);
+            agent.setFile2(fileName2);
+        }
+
         // 5. 메일 전송 권한 위임
         //sendMessage()와 savesentmail(agent)가 둘다 true일 때
         if (agent.sendMessage()){
@@ -136,7 +144,7 @@ public class WriteMailHandler extends HttpServlet {
         successPopUp.append("alert(\"");
         successPopUp.append(alertMessage);
         successPopUp.append("\"); ");
-        successPopUp.append("window.location = \"main_menu.jsp\"; ");
+        successPopUp.append("window.location = \"main_menu.jsp?ps=1&pe=10&no=1\"; ");
         successPopUp.append("}  </script>");
         successPopUp.append("</body></html>");
         return successPopUp.toString();

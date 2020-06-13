@@ -56,7 +56,7 @@ public class ReadMailHandler extends HttpServlet {
             case CommandType.DELETE_MAIL_COMMAND:
                 try (PrintWriter out = response.getWriter()) {
                     deleteMessage(request);
-                    response.sendRedirect("main_menu.jsp");
+                    response.sendRedirect("main_menu.jsp?ps=1&pe=10&no=1");
                 }
                 break;
 
