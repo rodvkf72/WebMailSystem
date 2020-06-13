@@ -25,6 +25,10 @@ public class Pop3Agent {
     private String userid;
     private String password;
 
+    private int pageStart; // 첫 페이지 
+    private int pageEnd; // 끝 페이지 
+    private int pageNo;
+    
     private Store store;
 
     private String exceptionType;
@@ -87,10 +91,10 @@ public class Pop3Agent {
     /*
      * 페이지 단위로 메일 목록을 보여주어야 함.
      */
-    public String getMessageList() {
+    public String getMessageList(String ps, String pe, String no) {
         String result = "";
         Message[] messages = null;
-
+        
         if (!connectToStore()) {  // 3.1
             logger.warn("POP3 connection failed!");
             return "POP3 연결이 되지 않아 메일 목록을 볼 수 없습니다.";
@@ -101,14 +105,36 @@ public class Pop3Agent {
             Folder folder = store.getFolder("INBOX");  // 3.2
             folder.open(Folder.READ_ONLY);  // 3.3
 
-            // 현재 수신한 메시지 모두 가져오기
-            messages = folder.getMessages();      // 3.4
+            int total = folder.getMessageCount();
+            
+            if(total == 0){
+                StringBuilder buffer = new StringBuilder();
+                buffer.append("<strong>받은 메일이 없습니다.</strong>");
+                result = buffer.toString();
+                return buffer.toString();
+            }
+            
+            pageStart = filterPs(ps, total);
+            pageEnd = filterPe(pageStart, total);
+            
+            logger.info("pagestart:"+pageStart +" pageend : "+ pageEnd);
+            // 현재 수신한 메시지 가져오기 (range값 입력)
+            messages = folder.getMessages(pageStart, pageEnd);      // 3.4
+            //Arrays.sort(messages, new CustomComparator());
+            
+            logger.info("messagecountT" + folder.getMessageCount());
             FetchProfile fp = new FetchProfile();
             // From, To, Cc, Bcc, ReplyTo, Subject & Date
             fp.add(FetchProfile.Item.ENVELOPE);
             folder.fetch(messages, fp);
 
             MessageFormatter formatter = new MessageFormatter(userid);  //3.5
+            
+            formatter.setPageNo(Integer.parseInt(no));
+            formatter.setPageStart(pageStart);
+            formatter.setPageEnd(pageEnd);
+            formatter.setTotalMail(folder.getMessageCount());
+            
             result = formatter.getMessageTable(messages);   // 3.6
 
             folder.close(true);  // 3.7
@@ -121,6 +147,38 @@ public class Pop3Agent {
         }
     }
 
+    private int filterPs(String pagestart, int total){
+        int ps;
+        
+        if(pagestart == null || pagestart.length() == 0)
+            ps = 1;
+        else
+            ps = Integer.parseInt(pagestart);
+        
+        ps = total - ps;
+        
+        if(ps < 0 || total < 9) {
+            ps = 1;
+        } else if(ps + 9 > total){
+            ps = total - 9;
+        }else {
+            ps = ps;
+        }
+        return ps;
+    }
+    
+    private int filterPe(int pageEnd, int total){
+        int pe;
+        
+        pe = pageEnd+9;
+        
+        if(pe > total) {
+            pe = total;
+        } 
+        
+        return pe;
+    }
+ 
     public String getMessage(int n) {
         String result = "POP3  서버 연결이 되지 않아 메시지를 볼 수 없습니다.";
 
@@ -227,5 +285,15 @@ public class Pop3Agent {
     public void setUserid(String userid) {
         this.userid = userid;
     }
+
+    public int getPageNo() {
+        return pageNo;
+    }
+
+    public void setPageNo(int pageNo) {
+        this.pageNo = pageNo;
+    }
+    
+
 }  // class Pop3Agent
 

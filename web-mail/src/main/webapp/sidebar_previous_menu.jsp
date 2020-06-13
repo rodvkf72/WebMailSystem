@@ -19,6 +19,6 @@
             <strong>사용자: <%= session.getAttribute("userid") %> </strong>
         </span> <br> <br>
         
-        <a href="main_menu.jsp"> 이전 메뉴로 </a>
+        <a href="main_menu.jsp?ps=1&pe=10&no=1"> 이전 메뉴로 </a>
     </body>
 </html>

@@ -9,14 +9,14 @@
 
 <jsp:useBean id="pop3" scope="page" class="cse.maven_webmail.model.Pop3Agent" />
 <%
-            //String pageno = (String) request.getParameter("pageno");
-            //if (pageno != null) {
-            //    session.setAttribute("pageno", pageno);
-            //}
             pop3.setHost((String) session.getAttribute("host"));
             pop3.setUserid((String) session.getAttribute("userid"));
             pop3.setPassword((String) session.getAttribute("password"));
-            //pop3.setPageno((int)Integer.parseInt((String)session.getAttribute("pageno")));
+            
+            String pageStart = request.getParameter("ps");
+            String pageEnd = request.getParameter("pe");
+            String pageno = request.getParameter("no");
+           
 %>
 
 <html>
@@ -34,7 +34,7 @@
         </div>
 
         <div id="main">
-            <%= pop3.getMessageList() %>
+            <%= pop3.getMessageList(pageStart, pageEnd, pageno) %>
         </div>
 
         <jsp:include page="footer.jsp" />

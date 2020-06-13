@@ -19,7 +19,7 @@
 
         <p> <a href="temporary.jsp"> 임시 보관함 </a> </p>
         <p> <a href="sentmail.jsp">보낸 메일함</a>
-        <p> <a href="main_menu.jsp"> 메일 읽기 </a> </p>
+        <p> <a href="main_menu.jsp?ps=1&pe=10&no=1"> 메일 읽기 </a> </p>
         <p> <a href="write_mail.jsp"> 메일 쓰기 </a> </p>
         <p> <a href="mypage.jsp">마이 페이지</a></p>
         <p> <a href="write_mail.jsp?to=<%=session.getAttribute("userid")%>"> 내게 쓰기 </a> </p>

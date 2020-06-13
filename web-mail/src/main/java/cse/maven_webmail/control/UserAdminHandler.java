@@ -44,49 +44,66 @@ public class UserAdminHandler extends HttpServlet {
             HttpSession session = request.getSession();
             //String userid = "admin";
             String userid = (String) session.getAttribute("userid");
-            String pwd = (String) session.getAttribute("password");
+            //String pwd = (String) session.getAttribute("password");
            
-            String oldpwd = (String) request.getParameter("oldpassword");
+            //String oldpwd = (String) request.getParameter("oldpassword");
             //out.println(oldpwd);
             
             String useridset = userid;//유저 아이디를 admin으로 만들기 전에 저장해둠.
-            if ((userid == null) || ( oldpwd.equals(pwd))){
+           /* if ((userid == null) || ( oldpwd.equals(pwd))){
                 userid = "admin";
             }
             
-            if (/*userid == null || */!userid.equals("admin")) {
+           */
+           
+            request.setCharacterEncoding("UTF-8");
+            int select = Integer.parseInt((String) request.getParameter("menu"));
+            
+            //userid == null일 때 회원가입만 가능
+            if (userid == null) {
+                /*
                 out.println("현재 사용자(" + userid + ")의 권한으로 수행 불가합니다.");
                 //out.println("<a href=index.jsp> 초기 화면으로 이동 </a>");
                 out.println("<a href=Login.do?menu=61> 초기 화면으로 이동 </a>");
                 return;
-            } 
-            else if(!oldpwd.equals(pwd)){
-                 out.println("비밀번호가 일치하지 않습니다.");
-                 out.println("<a href=mypage.jsp> 마이 페이지로 이동 </a>");
-                 return;
-            }
-            else {
-
-                request.setCharacterEncoding("UTF-8");
-                int select = Integer.parseInt((String) request.getParameter("menu"));
-
-                switch (select) {
+                */
+                switch(select){
                     case CommandType.ADD_USER_COMMAND:
                         addUser(request, response, out);
                         break;
-
-                    case CommandType.DELETE_USER_COMMAND:
-                        deleteUser(request, response, out);
-                        break;
-                        
-                    case CommandType.CHANGE_USER_PWD:
-                        changePwd(request, response, out, session, useridset);
-                        break;
-                        
                     default:
                         out.println("없는 메뉴를 선택하셨습니다. 어떻게 이 곳에 들어오셨나요?");
                         break;
                 }
+            }
+            //userid가 adkmin일 때
+            else if(userid.equals("admin")){
+                switch(select){
+                    case CommandType.ADD_USER_COMMAND:
+                        addUser(request, response, out);
+                        break; 
+                    case CommandType.DELETE_USER_COMMAND:
+                        deleteUser(request, response, out);
+                        break;
+                    default:
+                        out.println("없는 메뉴를 선택하셨습니다. 어떻게 이 곳에 들어오셨나요?");
+                        break;
+                 }
+                return;
+            }
+            //userid가 null도 admin도 아닌 회원일 때
+            else{
+                switch(select){
+                    case CommandType.CHANGE_USER_PWD:
+                        changePwd(request, response, out, session);
+                        break;
+                    case CommandType.DELETE_USER_COMMAND:
+                        deleteUser(request, response, out);
+                        break;
+                    default:
+                        out.println("없는 메뉴를 선택하셨습니다. 어떻게 이 곳에 들어오셨나요?");
+                        break;
+                 }
             }
         } catch (Exception ex) {
             logger.error(ex.toString());
@@ -211,41 +228,70 @@ public class UserAdminHandler extends HttpServlet {
     }
     
     //비밀번호 변경 메서드
-    private void changePwd(HttpServletRequest request, HttpServletResponse response, PrintWriter out, HttpSession session, String useridset) {
+    private void changePwd(HttpServletRequest request, HttpServletResponse response, PrintWriter out, HttpSession session) {
          String server = "127.0.0.1";
         int port = 4555;
         
         try {
             UserAdminAgent agent = new UserAdminAgent(server, port, this.getServletContext().getRealPath("."));
-            String userid = useridset;// for test
+            String userid = (String) session.getAttribute("userid");
+            String pwd = (String) session.getAttribute("password");
+            
             String oldpwd = request.getParameter("oldpassword");
             String newpwd = request.getParameter("newpassword");// for test
 
             out.flush();
             // if (addUser successful)  사용자 등록 성공 팦업창
             // else 사용자 등록 실패 팝업창
-            if (agent.changePassword(userid, oldpwd, newpwd)) {
+            if(!oldpwd.equals(pwd))
+            {
+                out.println(getPwdNotMatchedPopUp());
+            }
+            else{
+                if (agent.changePassword(userid, oldpwd, newpwd)) {
                 session.setAttribute("password", newpwd);
                 out.println(getChangeUserPwdSuccessPopUp());
                  
-            } else {
+                } else {
                 out.println(getChangeUserPwdFailurePopUp());
+                }
             }
+
             out.flush();
         } catch (Exception ex) {
             out.println("시스템 접속에 실패했습니다.");
         }
     }
     
-    //비밀번호 변경 성공했을때
+    //비밀번호 일치 하지 않음
+     private String getPwdNotMatchedPopUp() {
+        String alertMessage = "비밀번호가 일치하지 않습니다.";
+        StringBuilder successPopUp = new StringBuilder();
+        successPopUp.append("<html>");
+        successPopUp.append("<head>");
 
+        successPopUp.append("<title>비밀번호 변경 결과</title>");
+        successPopUp.append("<link type=\"text/css\" rel=\"stylesheet\" href=\"css/main_style.css\" />");
+        successPopUp.append("</head>");
+        successPopUp.append("<body onload=\"goMainMenu()\">");
+        successPopUp.append("<script type=\"text/javascript\">");
+        successPopUp.append("function goMainMenu() {");
+        successPopUp.append("alert(\"");
+        successPopUp.append(alertMessage);
+        successPopUp.append("\"); ");
+        successPopUp.append("window.location = \"mypage.jsp\"; ");
+        successPopUp.append("}  </script>");
+        successPopUp.append("</body></html>");
+        return successPopUp.toString();
+    }
+    //비밀번호 변경 성공했을때
      private String getChangeUserPwdSuccessPopUp() {
         String alertMessage = "비밀번호 변경에 성공했습니다.";
         StringBuilder successPopUp = new StringBuilder();
         successPopUp.append("<html>");
         successPopUp.append("<head>");
 
-        successPopUp.append("<title>메일 전송 결과</title>");
+        successPopUp.append("<title>비밀번호 변경 결과</title>");
        successPopUp.append("<link type=\"text/css\" rel=\"stylesheet\" href=\"css/main_style.css\" />");
         successPopUp.append("</head>");
         successPopUp.append("<body onload=\"goMainMenu()\">");
@@ -254,7 +300,7 @@ public class UserAdminHandler extends HttpServlet {
         successPopUp.append("alert(\"");
         successPopUp.append(alertMessage);
         successPopUp.append("\"); ");
-        successPopUp.append("window.location = \"main_menu.jsp\"; ");
+        successPopUp.append("window.location = \"main_menu.jsp?ps=1&pe=10&no=1\"; ");
         successPopUp.append("}  </script>");
         successPopUp.append("</body></html>");
         return successPopUp.toString();
@@ -268,7 +314,7 @@ public class UserAdminHandler extends HttpServlet {
         successPopUp.append("<html>");
         successPopUp.append("<head>");
 
-        successPopUp.append("<title>메일 전송 결과</title>");
+        successPopUp.append("<title>비밀번호 변경 결과</title>");
         successPopUp.append("<link type=\"text/css\" rel=\"stylesheet\" href=\"css/main_style.css\" />");
         successPopUp.append("</head>");
         successPopUp.append("<body onload=\"goMainMenu()\">");
@@ -277,7 +323,7 @@ public class UserAdminHandler extends HttpServlet {
         successPopUp.append("alert(\"");
         successPopUp.append(alertMessage);
         successPopUp.append("\"); ");
-        successPopUp.append("window.location = \"main_menu.jsp\"; ");
+        successPopUp.append("window.location =\"main_menu.jsp?ps=1&pe=10&no=1\"; ");
         successPopUp.append("}  </script>");
         successPopUp.append("</body></html>");
         return successPopUp.toString();
