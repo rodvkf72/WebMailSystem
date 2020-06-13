@@ -7,9 +7,11 @@ package cse.maven_webmail.control;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -56,6 +58,7 @@ public class TemporaryHandler extends HttpServlet {
             String t_subj = request.getParameter("subj") == null ? "" : request.getParameter("subj");
             String t_text = request.getParameter("body") == null ? "" : request.getParameter("body");
             String temporary_file = request.getParameter("temp") == null ? "" : request.getParameter("temp");
+            logger.info("temporary_file : " + temporary_file);
 
             Connection conn = null;
             Statement stmt = null;
@@ -71,10 +74,7 @@ public class TemporaryHandler extends HttpServlet {
                     throw new Exception("DB Connect Fail");
                 }
                 stmt = conn.createStatement();
-                //String preparedupdate = "UPDATE test SET test_user=?, test_to=?, test_cc=?, test_subj=?, test_text=? WHERE test_number=?;";
-                //pstmt = conn.prepareStatement(preparedupdate);
-                //String preparetest = "UPDATE test SET test_to=?;";
-                //pstmt = conn.prepareStatement(preparetest);
+
                 /* 
          * 널이나 공백 삽입 시 데이터 삽입 방지
          * 임시 보관함 내용을 수정없이 왔다갔다 해도 계속 같은 값이 저장되기 때문에 데이터베이스에 플래그를 설정하여 처음 쓸 때만 저장되고
@@ -83,29 +83,14 @@ public class TemporaryHandler extends HttpServlet {
                 if (((t_to == null) || (t_to.equals(""))) && ((t_cc == null) || (t_cc.equals(""))) && ((t_subj == null) || (t_subj.equals(""))) && ((t_text == null) || (t_text.equals("")))) {
 
                 } else if (temporary_file.equals("TR")) {
-                    /*String test = "1234";
-                    pstmt.setString(1, test);
-                    pstmt.execute();
-                    String statement_user = "HEX(AES_ENCRYPT('" + t_user + "', 'userid'))";
-                    String statement_to = "HEX(AES_ENCRYPT('" + t_to + "', 'to'))";
-                    String statement_cc = "HEX(AES_ENCRYPT('" + t_cc + "', 'cc'))";
-                    String statement_subj = "HEX(AES_ENCRYPT('" + t_subj + "', 'subj'))";
-                    String statement_text = "HEX(AES_ENCRYPT('" + t_text + "', 'text'))";
-                    String statement_number = "'" + t_number + "';";
-
-                    pstmt.setString(1, statement_user);
-                    pstmt.setString(2, statement_to);
-                    pstmt.setString(3, statement_cc);
-                    pstmt.setString(4, statement_subj);
-                    pstmt.setString(5, statement_text);
-                    pstmt.setString(6, statement_number);
-                    pstmt.executeUpdate();*/
                     stmt.executeUpdate("UPDATE test SET test_user = HEX(AES_ENCRYPT('" + t_user + "', 'userid')),"
                             + "test_to = HEX(AES_ENCRYPT('" + t_to + "', 'to')),"
                             + "test_cc = HEX(AES_ENCRYPT('" + t_cc + "', 'cc')),"
                             + "test_subj = HEX(AES_ENCRYPT('" + t_subj + "', 'subj')),"
                             + "test_text = HEX(AES_ENCRYPT('" + t_text + "', 'text')) WHERE test_number='" + t_number + "';");
                     
+                } else if (temporary_file.equals("DEL")){
+                    stmt.executeUpdate("DELETE FROM test WHERE test_number = '" + t_number + "';");
                 } else {
                     //암호화
                     stmt.executeUpdate("INSERT INTO test (test_user, test_to, test_cc, test_subj, test_text) VALUES ("
@@ -114,6 +99,9 @@ public class TemporaryHandler extends HttpServlet {
                             + "HEX(AES_ENCRYPT('" + t_cc + "', 'cc')),"
                             + "HEX(AES_ENCRYPT('" + t_subj + "', 'subj')),"
                             + "HEX(AES_ENCRYPT('" + t_text + "', 'text')));");
+                }
+                if (temporary_file.equals("DEL")) {
+                    stmt.executeUpdate("DELETE FROM test WHERE test_number = '" + t_number + "';");
                 }
             } finally {
                 try {
@@ -129,9 +117,10 @@ public class TemporaryHandler extends HttpServlet {
 
                 }
             }
+            response.sendRedirect("temporary.jsp");
         }
     }
-
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.

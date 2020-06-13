@@ -40,7 +40,7 @@
                             String cc = XSSFilter.Filter(request.getParameter("cc") == null ? "" : request.getParameter("cc"));
                             String subj = XSSFilter.Filter(request.getParameter("subj") == null ? "" : request.getParameter("subj"));
                             String text = XSSFilter.Filter(request.getParameter("text") == null ? "" : request.getParameter("text"));
-                            String temp = XSSFilter.Filter(request.getParameter("temporary") == null ? "" : request.getParameter("temporary"));
+                            String temp = XSSFilter.Filter(request.getParameter("temp") == null ? "" : request.getParameter("temp"));
                             %>
                         <input type="text" name="number" value="<%=number%>" hidden>
                         <td> 수신 </td>
