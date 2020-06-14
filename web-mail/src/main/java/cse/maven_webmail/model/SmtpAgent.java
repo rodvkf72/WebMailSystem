@@ -267,7 +267,10 @@ public class SmtpAgent {
             // 메일 전송 완료되었으므로 서버에 저장된
             // 첨부 파일 삭제함
 
-            f = new File(this.file1);
+            if(this.file1 != null)
+                f = new File(this.file1);
+                
+            
            logger.info("save the sentmail start");
             boolean sentinsertsuccess = savesentmail();
             logger.info("sent mail insert success = " + sentinsertsuccess);

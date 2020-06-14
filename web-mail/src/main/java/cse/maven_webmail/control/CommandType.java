@@ -16,6 +16,7 @@ public class CommandType {
     public final static int SEND_MAIL_COMMAND = 21;
     public final static int DELETE_MAIL_COMMAND = 41;
     public final static int DOWNLOAD_COMMAND = 51;
+    public final static int DELETE_SENTMAIL_COMMAND = 42;
     
     public final static int ADD_USER_COMMAND = 61;
     public final static int DELETE_USER_COMMAND = 62;

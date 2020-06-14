@@ -41,6 +41,7 @@ public class getSentMail {
         
         Connection conn = null;
         Statement stmt = null;
+        Statement newstmt = null;
         
         String userID = userid;
         ResultSet decrypt_rs = null;
@@ -53,6 +54,8 @@ public class getSentMail {
         String body = null;
         String saveDate = null;
         String id = userid;
+        
+        ResultSet count = null;
         
         log.info(userID);
 
@@ -71,6 +74,8 @@ public class getSentMail {
             conn = ds.getConnection();
             //Statement 객체 생성
             stmt = conn.createStatement();
+            newstmt = conn.createStatement();
+            int cnum = 0;
 
             if (conn == null) {
                 throw new Exception("DB Connect Fail");
@@ -85,33 +90,48 @@ public class getSentMail {
                     + "CAST(AES_DECRYPT(UNHEX(CarbonCopy),'CarbonCopy') AS CHAR), "
                     + "saveDate FROM sent_mail_inbox WHERE CAST(AES_DECRYPT(UNHEX(sender), 'sender') AS CHAR)='" + userID + "' order by saveDate desc;";
             
+            String countsql = "select count(num) from sent_mail_inbox where CAST(AES_DECRYPT(UNHEX(sender), 'sender') AS CHAR)='" + userID + "'";
             decrypt_rs = stmt.executeQuery(sql);
+            count = newstmt.executeQuery(countsql);
+            
+            while(count.next()){
+                cnum = count.getInt("count(num)");
+            }
+            log.info(cnum);
 
             buffer.append("<table>");  // table start
             buffer.append("<tr> "
                     + " <th> No. </td> "
                     + " <th> 받은 사람 </td>"
                     + " <th> 참조자 </td>"
-                    + " <th> 제목 </td>     "
-                    + " <th> 보낸 날짜 </td>   "
+                    + " <th> 제목 </td>"
+                    + " <th> 보낸 날짜 </td>"
+                    +" <th> 삭제 </td>"
                     + " </tr>");
+            
 
             while(decrypt_rs.next()){
                 num = decrypt_rs.getInt("num");
+                
                 toAddress = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(recipients), 'recipient') AS CHAR)");
                 ccAddress = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(CarbonCopy),'CarbonCopy') AS CHAR)");
                 subject = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(message_name), 'message_name') AS CHAR)");
                 saveDate = decrypt_rs.getString("saveDate");
                 
                 buffer.append("<tr> "
-                        + " <td id=no>" + num + " </td> "
+                        + " <td id=no>" + cnum + " </td> "
                         + " <td id=sender>" + toAddress + "</td>"
                         + " <td id=cc>" + ccAddress + "</td>"
                         + " <td id=subject> "
                         + " <a href=show_sentmessage.jsp?msgid=" + num + " title=\"메일 보기\"> "
                         + subject + "</a> </td>"
                         + " <td id=date>" + saveDate + "</td>"
+                        + " <td id=delete>"
+                        + "<a href=ReadMail.do?menu="
+                        + CommandType.DELETE_SENTMAIL_COMMAND
+                        + "&msgid=" + num + "> 삭제 </a>" + "</td>"
                         + " </tr>");
+                cnum--;
             }
             
             
@@ -128,8 +148,11 @@ public class getSentMail {
         }
         finally{
             decrypt_rs.close();
+            count.close();
+            newstmt.close();
             stmt.close();
             conn.close();
+            
          }        
     }
 }
