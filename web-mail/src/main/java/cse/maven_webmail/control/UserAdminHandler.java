@@ -41,7 +41,6 @@ public class UserAdminHandler extends HttpServlet {
 //        PrintWriter out = response.getWriter();
         try (PrintWriter out = response.getWriter()) {
 //        RequestDispatcher view = request.getRequestDispatcher("main_menu.jsp");
-            // Validate if userid == "admin"
             HttpSession session = request.getSession();
             //String userid = "admin";
             String userid = (String) session.getAttribute("userid");
@@ -240,8 +239,7 @@ public class UserAdminHandler extends HttpServlet {
             
             String oldpwd = request.getParameter("oldpassword");
             String newpwd = request.getParameter("newpassword");// for test
-            //out.println("userid = " + userid + "<br>");
-            //out.println("password = " + password + "<br>");
+
             out.flush();
             // if (addUser successful)  사용자 등록 성공 팦업창
             // else 사용자 등록 실패 팝업창

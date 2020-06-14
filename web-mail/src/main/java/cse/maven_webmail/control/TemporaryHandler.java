@@ -7,22 +7,30 @@ package cse.maven_webmail.control;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author rodvk
  */
 public class TemporaryHandler extends HttpServlet {
+    
+    private static final org.slf4j.Logger logger =  LoggerFactory.getLogger(TemporaryHandler.class);
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -37,6 +45,7 @@ public class TemporaryHandler extends HttpServlet {
             throws ServletException, IOException, ClassNotFoundException, Exception {
         response.setContentType("text/html;charset=UTF-8");
         HttpSession session = request.getSession();
+        Properties props = new Properties();
         try (PrintWriter out = response.getWriter()) {
             /* TODO output your page here. You may use following sample code. */
             request.setCharacterEncoding("UTF-8");
@@ -49,9 +58,11 @@ public class TemporaryHandler extends HttpServlet {
             String t_subj = request.getParameter("subj") == null ? "" : request.getParameter("subj");
             String t_text = request.getParameter("body") == null ? "" : request.getParameter("body");
             String temporary_file = request.getParameter("temp") == null ? "" : request.getParameter("temp");
+            logger.info("temporary_file : " + temporary_file);
 
             Connection conn = null;
             Statement stmt = null;
+            //PreparedStatement pstmt = null;
 
             try {
                 Class.forName("com.mysql.cj.jdbc.Driver");
@@ -77,6 +88,9 @@ public class TemporaryHandler extends HttpServlet {
                             + "test_cc = HEX(AES_ENCRYPT('" + t_cc + "', 'cc')),"
                             + "test_subj = HEX(AES_ENCRYPT('" + t_subj + "', 'subj')),"
                             + "test_text = HEX(AES_ENCRYPT('" + t_text + "', 'text')) WHERE test_number='" + t_number + "';");
+                    
+                } else if (temporary_file.equals("DEL")){
+                    stmt.executeUpdate("DELETE FROM test WHERE test_number = '" + t_number + "';");
                 } else {
                     //암호화
                     stmt.executeUpdate("INSERT INTO test (test_user, test_to, test_cc, test_subj, test_text) VALUES ("
@@ -86,21 +100,27 @@ public class TemporaryHandler extends HttpServlet {
                             + "HEX(AES_ENCRYPT('" + t_subj + "', 'subj')),"
                             + "HEX(AES_ENCRYPT('" + t_text + "', 'text')));");
                 }
+                if (temporary_file.equals("DEL")) {
+                    stmt.executeUpdate("DELETE FROM test WHERE test_number = '" + t_number + "';");
+                }
             } finally {
                 try {
                     stmt.close();
+                    //pstmt.close();
                 } catch (Exception ignored) {
 
                 }
                 try {
                     conn.close();
+                    //pstmt.close();
                 } catch (Exception ignored) {
 
                 }
             }
+            response.sendRedirect("temporary.jsp");
         }
     }
-
+    
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -116,7 +136,7 @@ public class TemporaryHandler extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (Exception ex) {
-            Logger.getLogger(TemporaryHandler.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(TemporaryHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -134,7 +154,7 @@ public class TemporaryHandler extends HttpServlet {
         try {
             processRequest(request, response);
         } catch (Exception ex) {
-            Logger.getLogger(TemporaryHandler.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(TemporaryHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

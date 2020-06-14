@@ -71,7 +71,7 @@ public class WriteMailHandler extends HttpServlet {
                     break;
             }
         } catch (Exception ex) {
-            out.println(ex.toString());
+            logger.info(ex.toString());
         } finally {
             out.close();
         }
@@ -104,12 +104,10 @@ public class WriteMailHandler extends HttpServlet {
         logger.debug("WriteMailHandler.sendMessage() : fileName = " + fileName);
 
         if (fileName != null) {
-            logger.info("wpqkf 1 : " + fileName);
             agent.setFile1(fileName);
 
         }
         if (fileName2 != null) {
-            logger.info("wpqkf 2 : " + fileName2);
             agent.setFile2(fileName2);
         }
 

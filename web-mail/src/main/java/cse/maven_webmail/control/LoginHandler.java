@@ -129,6 +129,7 @@ public class LoginHandler extends HttpServlet {
     //데이터베이스에서 마지막으로 비밀번호를 변경한 날짜로부터 몇일이 지났는지 받아온다.
 
     int getPwdChangedDate(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String userid, Log log) throws SQLException{
+       Connection conn = null;
         try{
             //DBCP데이터베이스 기법 사용
             //데이터베이스 정보는 context.xml에 있음
@@ -142,7 +143,7 @@ public class LoginHandler extends HttpServlet {
             javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
             
             //Connection 객체 생성
-            Connection conn = ds.getConnection();
+            conn = ds.getConnection();
             //Statement 객체 생성
             Statement stmt = conn.createStatement();
             
@@ -174,6 +175,8 @@ public class LoginHandler extends HttpServlet {
             log.info(ex.getMessage());
             out.println("오류가 발생했습니다.(발생 오류:" + ex.getMessage()+")");
             return 0;
+        } finally {
+            conn.close();
         }
     }
 

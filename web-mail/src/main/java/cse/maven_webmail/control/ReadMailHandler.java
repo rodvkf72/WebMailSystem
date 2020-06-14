@@ -154,17 +154,18 @@ public class ReadMailHandler extends HttpServlet {
         }
     }
     
-    private String getNewFileName(String fileName, String sentdate){
+    private String getNewFileName(String fileName, String sentdate) throws SQLException{
         String newFileName= ""; // 새 파일이름을 저장할 String 변수 
         String sql;
         
+        Connection conn = null;
         try{
             // 1. 데이터베이스 세팅
             final String JdbcDriver = "com.mysql.cj.jdbc.Driver";
             
             Class.forName(JdbcDriver);
             
-            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName + "?serverTimezone=UTC", DBInfo.id, DBInfo.pw);;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName + "?serverTimezone=UTC", DBInfo.id, DBInfo.pw);;
             
             sentdate = sentdate.replaceAll("-", "");
             String tmpfileName = sentdate + fileName;
@@ -184,6 +185,8 @@ public class ReadMailHandler extends HttpServlet {
         }catch (Exception ex){
             logger.info("오류발생 + " + ex.toString());
             return "";
+        } finally {
+            conn.close();
         }
         
         return newFileName;

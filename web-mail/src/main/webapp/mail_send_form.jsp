@@ -3,6 +3,7 @@
     Author     : jongmin
 --%>
 
+<%@page import="cse.maven_webmail.control.XSSFilter"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="cse.maven_webmail.control.CommandType" %>
 
@@ -19,8 +20,9 @@
             <table>
                 <tr>
                     <td> 수신 </td>
+                    <% String recv = XSSFilter.Filter(request.getParameter("recv") == null ? "" : request.getParameter("recv")); %>
                     <td> <input type="text" name="to" size="80"
-                                value=<%=request.getParameter("recv") == null ? "" : request.getParameter("recv")%>>  </td>
+                                value=<%=recv%>>  </td>
                 </tr>
                 <tr>
                     <td>참조</td>

@@ -6,6 +6,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@page import="cse.maven_webmail.control.CommandType" %>
 <%@page import="java.sql.*"%>
+<%@page import="cse.maven_webmail.control.XSSFilter" %>
 
 <!DOCTYPE html>
 <% request.setCharacterEncoding("UTF-8"); %>
@@ -33,11 +34,19 @@
                   action="WriteMail.do?menu=<%= CommandType.SEND_MAIL_COMMAND%>">
                 <table>
                     <tr>
-                        <input type="text" name="number" value="<%=request.getParameter("number") == null ? "" : request.getParameter("number")%>" hidden>
+                        <%
+                            String number = XSSFilter.Filter(request.getParameter("number") == null ? "" : request.getParameter("number"));
+                            String to = XSSFilter.Filter(request.getParameter("to") == null ? "" : request.getParameter("to"));
+                            String cc = XSSFilter.Filter(request.getParameter("cc") == null ? "" : request.getParameter("cc"));
+                            String subj = XSSFilter.Filter(request.getParameter("subj") == null ? "" : request.getParameter("subj"));
+                            String text = XSSFilter.Filter(request.getParameter("text") == null ? "" : request.getParameter("text"));
+                            String temp = XSSFilter.Filter(request.getParameter("temp") == null ? "" : request.getParameter("temp"));
+                            %>
+                        <input type="text" name="number" value="<%=number%>" hidden>
                         <td> 수신 </td>
                     
                         <td> <input type="text" name="to" size="80" required
-                                    value=<%=request.getParameter("to") == null ? "" : request.getParameter("to")%>>  </td>
+                                    value=<%=to%>>  </td>
                         <!--
                         -- 이거 userid로 하니까 임시보관함 수정 기능에 null값 들어가요..
                         -- 기존에 "to" 말고 "recv" 라고 적혀 있었는데 왜 있었는지 모르겠음
@@ -46,17 +55,17 @@
                     </tr>
                     <tr>
                         <td>참조</td>
-                        <td> <input type="text" name="cc" size="80" value="<%=request.getParameter("cc") == null ? "" : request.getParameter("cc")%>">  </td>
+                        <td> <input type="text" name="cc" size="80" value="<%=cc%>">  </td>
                     </tr>
                     <tr>
                         <td> 메일 제목 </td>
-                        <td> <input type="text" name="subj" size="80" value="<%=request.getParameter("subj") == null ? "" : request.getParameter("subj")%>">  </td>
+                        <td> <input type="text" name="subj" size="80" value="<%=subj%>">  </td>
                     </tr>
                     <tr>
                         <td colspan="2">본  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 문</td>
                     </tr>
                     <tr>  <%-- TextArea    --%>
-                        <td colspan="2">  <textarea rows="15" name="body" cols="80"><%=request.getParameter("text") == null ? "" : request.getParameter("text")%></textarea> </td>
+                        <td colspan="2">  <textarea rows="15" name="body" cols="80"><%=text%></textarea> </td>
                     </tr>
                     
                     <tr>
@@ -64,7 +73,7 @@
                         <td> <input type="file" id="file1" name="file1" size="40"> </br>
                              <input type="file" id="file2" name="file2" size="40"> </td>
                     </tr>
-                    <input type="text" name="temp" id="temp" value="<%=request.getParameter("temporary") == null ? "" : request.getParameter("temporary")%>" hidden>
+                    <input type="text" name="temp" id="temp" value="<%=temp%>" hidden>
                     <tr>
                         <td colspan="2">
                             <input name="sbt" type="submit" value="메일 보내기" onclick="submitForm();">
