@@ -249,11 +249,8 @@ public class SmtpAgent {
             // 메일 전송 완료되었으므로 서버에 저장된
             // 첨부 파일 삭제함
             if (this.file1 != null) {
-
-                f = new File(this.file1);
-
                 /*if (this.file1 != null) {
->>>>>>> 138c8473369c59ac71a1847f6a789a2642925647
+
                 File f = new File(this.file1);
                 boolean sentinsertsuccess = savesentmail(f);
                 logger.info("sent mail insert success = " + sentinsertsuccess);
@@ -347,7 +344,9 @@ public class SmtpAgent {
                 InputStream ins = new FileInputStream(attachedfile);
 
                 filename = fname.substring(fname.lastIndexOf("/") + 1);
+
                 logger.info(filename);
+
                 pstmt.setString(1, filename);
                 pstmt.setBinaryStream(2, ins, fileLength);
             }

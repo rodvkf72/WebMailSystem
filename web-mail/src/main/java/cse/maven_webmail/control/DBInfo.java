@@ -19,5 +19,4 @@ public class DBInfo {
     public final static String projectName = "mail";
     public final static String downloadTempDir = "C:/jsp/download/";
     public final static String uploadTempDir = "C:/jsp/upload";
-  
 }

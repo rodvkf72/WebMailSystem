@@ -28,74 +28,91 @@
         <div id="main">
             <table>
                 <tr>
-                <th> 수신자 </td>
-                <th> 참조 </td>
-                <th> 메일 제목 </td>
-                <th> 본문 </td>
-                <th> 수정</td>
+                    <th> 수신자 </td>
+                    <th> 참조 </td>
+                    <th> 메일 제목 </td>
+                    <th> 본문 </td>
+                    <th> 수정 </td>
+                    <th> 삭제 </td>
                 </tr>
-            
-            <%
-                Connection conn = null;
-                Statement stmt = null;
-                String number = null;
-                String to = null;
-                String cc = null;
-                String subj = null;
-                String text = null;
-                String t_user = (String) session.getAttribute("userid");
 
-                try {
-                    Class.forName("com.mysql.cj.jdbc.Driver");
-                    conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName + "?serverTimezone=UTC", DBInfo.id, DBInfo.pw);
-                    //이건 개인 디비에 맞게 쓸 때 수정하셔야 합니다.
-                    // id/ 비밀번호 입력 부분을 변경하였습니다. DBInfo 클래스에서 사용자 관련 내용을 수정하실 수 있습니다. 
+                <%
+                    Connection conn = null;
+                    Statement stmt = null;
+                    String number = null;
+                    String to = null;
+                    String cc = null;
+                    String subj = null;
+                    String text = null;
+                    String t_user = (String) session.getAttribute("userid");
 
-                    if (conn == null) {
-                        throw new Exception("DB Connect Fail");
-                    }
-                    stmt = conn.createStatement();
-                    //복호화
-                    //ResultSet rs = stmt.executeQuery("SELECT * FROM test WHERE t_user");
-                    ResultSet decrypt_rs = stmt.executeQuery("SELECT test_number,"
-                            + "CAST(AES_DECRYPT(UNHEX(test_to), 'to') AS CHAR), "
-                            + "CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') AS CHAR), "
-                            + "CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') AS CHAR), "
-                            + "CAST(AES_DECRYPT(UNHEX(test_text), 'text') AS CHAR) FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
-                    
-                    while (decrypt_rs.next()) {
-                        number = decrypt_rs.getString("test_number");
-                        to = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_to), 'to') as char)");
-                        cc = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') as char)");
-                        subj = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') as char)");
-                        text = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_text), 'text') as char)");%>
-   
-            <form method="POST" action="write_mail.jsp">
-               <tr>
-                   <input type="text" name="number" value="<%=number == null ? "" : number%>" hidden>
-                   <td id = to><input type="text" name="to" value="<%=to == null ? "" : to%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;</td>
-                   <td id = cc><input type="text" name="cc" value="<%=cc == null ? "" : cc%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
-                   <td id = subj><input type="text" name="subj" value="<%=subj == null ? "" : subj%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
-                   <td id = body><input type="text" name="text" value="<%=text == null ? "" : text%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
-                   <input type="text" name="temporary" value="TR" hidden>
-                   <td id = submit><input type="submit" value="수정"></td>
-               </tr>
-            </form>
-
-            <%}
-                } finally {
                     try {
-                        stmt.close();
-                    } catch (Exception ignored) {
+                        Class.forName("com.mysql.cj.jdbc.Driver");
+                        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/" + DBInfo.projectName + "?serverTimezone=UTC", DBInfo.id, DBInfo.pw);
+                        //이건 개인 디비에 맞게 쓸 때 수정하셔야 합니다.
+                        // id/ 비밀번호 입력 부분을 변경하였습니다. DBInfo 클래스에서 사용자 관련 내용을 수정하실 수 있습니다. 
 
-                    }
-                    try {
-                        conn.close();
-                    } catch (Exception ignored) {
+                        if (conn == null) {
+                            throw new Exception("DB Connect Fail");
+                        }
+                        stmt = conn.createStatement();
+                        //복호화
+                        //ResultSet rs = stmt.executeQuery("SELECT * FROM test WHERE t_user");
+                        ResultSet decrypt_rs = stmt.executeQuery("SELECT test_number,"
+                                + "CAST(AES_DECRYPT(UNHEX(test_to), 'to') AS CHAR), "
+                                + "CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') AS CHAR), "
+                                + "CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') AS CHAR), "
+                                + "CAST(AES_DECRYPT(UNHEX(test_text), 'text') AS CHAR) FROM test WHERE CAST(AES_DECRYPT(UNHEX(test_user), 'userid') AS CHAR)='" + t_user + "';");
 
+                        while (decrypt_rs.next()) {
+                            number = decrypt_rs.getString("test_number");
+                            to = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_to), 'to') as char)");
+                            cc = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_cc), 'cc') as char)");
+                            subj = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_subj), 'subj') as char)");
+                            text = decrypt_rs.getString("CAST(AES_DECRYPT(UNHEX(test_text), 'text') as char)");
+                %>
+
+                <form method="POST" name="frm" action="write_mail.jsp">
+                    <tr>
+                    <input type="text" name="number" value="<%=number == null ? "" : number%>" hidden>
+                    <td id = to><input type="text" name="to" value="<%=to == null ? "" : to%>" readonly style="background-color:transparent;border:0 solid black;text-align:center;width:100px;"> &nbsp;</td>
+                    <td id = cc><input type="text" name="cc" value="<%=cc == null ? "" : cc%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
+                    <td id = subj><input type="text" name="subj" value="<%=subj == null ? "" : subj%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
+                    <td id = body><input type="text" name="text" value="<%=text == null ? "" : text%>" readonly style="background-color:transparent;border:0 solid black;"> &nbsp;</td>
+                    <input type="text" id="temp" name="temp" value="TR" hidden>
+                    <td id = submit><input type="submit" value="수정"></td>
+                    <td id = del> <a href="TemporaryHandler.do?number=<%=number%>&temp=DEL">삭제</a></td>
+                    </tr>
+                </form>
+
+                <iframe name='ifrm' width='0' height='0' frameborder='0'></iframe>
+                <script type="text/javascript">
+                    function ched() {
+                        document.getElementById('temp').value = "DEL";
+                        document.frm.encoding = "application/x-www-form-urlencoded";
+                        //target을 iframe으로 하여 현재 폼의 submit을 페이지 변환 없이 값 전달
+                        document.frm.target = 'ifrm';
+                        //폼의 액션을 test2.jsp로 재지정
+                        document.frm.action = 'TemporaryHandler.do';
+                        //액션 위치가 변환된 폼 submit
+                        document.frm.submit();
                     }
-                }
-            %>  
+                </script>
+
+                <%}
+                    } finally {
+                        try {
+                            stmt.close();
+                        } catch (Exception ignored) {
+
+                        }
+                        try {
+                            conn.close();
+                        } catch (Exception ignored) {
+
+                        }
+                    }
+                %>  
             </table>
         </div>
 

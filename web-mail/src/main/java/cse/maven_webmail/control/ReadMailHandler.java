@@ -21,6 +21,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.Level;
+import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,15 +48,15 @@ public class ReadMailHandler extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException, NamingException{
         response.setContentType("text/html;charset=UTF-8");
-
+        
         request.setCharacterEncoding("UTF-8");
         int select = Integer.parseInt((String) request.getParameter("menu"));
 
-        switch (select) {
+            switch (select) {
             case CommandType.DELETE_MAIL_COMMAND:
-                try (PrintWriter out = response.getWriter()) {
+                try (PrintWriter out = response.getWriter()){
                     deleteMessage(request);
                     response.sendRedirect("main_menu.jsp?ps=1&pe=10&no=1");
                 }
@@ -61,12 +65,25 @@ public class ReadMailHandler extends HttpServlet {
             case CommandType.DOWNLOAD_COMMAND: // 파일 다운로드 처리
                 download(request, response);
                 break;
+            case CommandType.DELETE_SENTMAIL_COMMAND:
+                try (PrintWriter out = response.getWriter()){
+                    if(deleteSentMessage(request))
+                    {
+                       logger.info("success!!");
+                       response.sendRedirect("sentmail.jsp?status=1");
+                    }
+                    else
+                        response.sendRedirect("sentmail.jsp?status=0");
+                }
+                break;
 
             default:
-                try (PrintWriter out = response.getWriter()) {
+            try (PrintWriter out = response.getWriter()){
                     out.println("없는 메뉴를 선택하셨습니다. 어떻게 이 곳에 들어오셨나요?");
                 }
                 break;
+        
+        
 
         }
     }
@@ -176,6 +193,57 @@ public class ReadMailHandler extends HttpServlet {
         boolean status = pop3.deleteMessage(msgid, true);
         return status;
     }
+    
+    private boolean deleteSentMessage(HttpServletRequest request) throws NamingException, SQLException {
+        int msgid = Integer.parseInt((String) request.getParameter("msgid"));
+        boolean status = false;
+        
+        HttpSession httpSession = request.getSession();
+        String host = (String) httpSession.getAttribute("host");
+        String userid = (String) httpSession.getAttribute("userid");
+        String password = (String) httpSession.getAttribute("password");
+        
+        
+        String JNDIname = "java:/comp/env/jdbc/Webmail";
+
+        javax.naming.Context ctx = new javax.naming.InitialContext();
+        javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
+
+        Connection conn = ds.getConnection();
+        Statement stmt = conn.createStatement();
+        String sql = "delete from sent_mail_inbox where num = " + msgid;
+        stmt.execute(sql);
+            
+        if(stmt.getUpdateCount() == 1){
+            status = true;
+            logger.info("delete success");
+        }
+
+        stmt.close();
+        conn.close();
+        return status;
+    }
+    
+    //보낸 메일 삭제 결과 출력
+     private String getDeleteSentMessagePopUp(String alertMessage) {
+       StringBuilder successPopUp = new StringBuilder();
+        successPopUp.append("<html>");
+        successPopUp.append("<head>");
+
+        successPopUp.append("<title>메일 삭제 결과</title>");
+        successPopUp.append("<link type=\"text/css\" rel=\"stylesheet\" href=\"css/main_style.css\" />");
+        successPopUp.append("</head>");
+        successPopUp.append("<body onload=\"goMainMenu()\">");
+        successPopUp.append("<script type=\"text/javascript\">");
+        successPopUp.append("function goMainMenu() {");
+        successPopUp.append("alert(\"");
+        successPopUp.append(alertMessage);
+        successPopUp.append("\"); ");
+        successPopUp.append("window.location = \"sentmail.jsp\"; ");
+        successPopUp.append("}  </script>");
+        successPopUp.append("</body></html>");
+        return successPopUp.toString();
+    }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /** 
@@ -188,7 +256,13 @@ public class ReadMailHandler extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            java.util.logging.Logger.getLogger(ReadMailHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            java.util.logging.Logger.getLogger(ReadMailHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /** 
@@ -201,7 +275,13 @@ public class ReadMailHandler extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        try {
+            processRequest(request, response);
+        } catch (SQLException ex) {
+            java.util.logging.Logger.getLogger(ReadMailHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            java.util.logging.Logger.getLogger(ReadMailHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /** 

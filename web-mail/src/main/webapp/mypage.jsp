@@ -25,9 +25,6 @@
         <div id="main">
             비밀번호 변경을 할 수 있습니다.  <br>
             새 비밀번호를 입력해 주세요<br><br>
-            <% String userName = (String) session.getAttribute("userid");
-                out.print("유저 이름 :" + userName );
-            %>
 
             <form name="changeInfo" action="UserAdmin.do?menu=<%= CommandType.CHANGE_USER_PWD%>"
                   method="POST">
