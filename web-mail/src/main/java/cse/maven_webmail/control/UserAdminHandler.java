@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.UserAdminAgent;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,10 +122,10 @@ public class UserAdminHandler extends HttpServlet {
             //String useridfilter = XSSFilter.Filter("userid = " + userid + "<br>");
             //String userpasswordfilter = XSSFilter.Filter("password = " + password + "<br>");
             
-            //String matchPtn = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
+            String matchTestPtn = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{6,20}$";
             String matchId = "^[a-zA-Z0-9]*$"; 
             String matchBlacket = "^\\(\\)\\{\\}\\[\\]$";
-            String matchTestPtn = "^(?=.*[0-9]).{6,20}$"; //개발 시 테스트 간단화를 위해 까다롭지 않은 정규표현식을 사용 
+            //String matchTestPtn = "^(?=.*[0-9]).{6,20}$"; //개발 시 테스트 간단화를 위해 까다롭지 않은 정규표현식을 사용 
             
             String matchBlankPtn = "^.*\\s.*$";
             
@@ -157,7 +156,7 @@ public class UserAdminHandler extends HttpServlet {
             // 비밀번호 유효성 체크 
             regex = Pattern.matches(matchTestPtn, password);
             if(!regex){
-                out.println(getUserRegistrationPopUp("숫자를 포함한 6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
+                out.println(getUserRegistrationPopUp("영문 대소문자, 숫자를 포함한 6자리 이상 20자리 이하의 패스워드를 입력해주세요."));
                 return;
             }
             

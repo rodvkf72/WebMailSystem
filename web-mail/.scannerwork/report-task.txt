@@ -1,0 +1,6 @@
+projectKey=team6-webmail
+serverUrl=http://113.198.234.124:9000
+serverVersion=8.2.0.32929
+dashboardUrl=http://113.198.234.124:9000/dashboard?id=team6-webmail
+ceTaskId=AXKtkTdIo4uWwcX_zLDQ
+ceTaskUrl=http://113.198.234.124:9000/api/ce/task?id=AXKtkTdIo4uWwcX_zLDQ

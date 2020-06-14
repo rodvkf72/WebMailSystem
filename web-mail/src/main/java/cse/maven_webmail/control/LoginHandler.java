@@ -47,8 +47,6 @@ public class LoginHandler extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         PrintWriter out = response.getWriter();
 
-        Log log = LogFactory.getLog(LoginHandler.class);
-
         int selected_menu = Integer.parseInt((String) request.getParameter("menu"));
 
 
@@ -77,19 +75,19 @@ public class LoginHandler extends HttpServlet {
                             
                             //비밀번호 마지막 변경 날짜를 받아오는 함수 호출
                
-                            int resultDate = getPwdChangedDate(request, response, out, userid, log);
+                            int resultDate = getPwdChangedDate(request, response, out, userid);
                             
                             //마지막 변경 후 지난 날짜가 90일 이상일경우
                             if(resultDate > 90)
                             {
                                 //비밀번호 변경 요청 페이지로 이동
                                 response.sendRedirect("change_pwd.jsp");
-                                log.info("change the password");
+                                logger.info("change the password");
                             }
                             else
                             {
                                 //90일 이하이거나 0일경우 메인 메뉴 페이지로 이동
-                                log.info("main_menu.jsp");
+                                logger.info("main_menu.jsp");
                                 response.sendRedirect("main_menu.jsp?ps=1&pe=10&no=1");
                             }
                         }
@@ -128,16 +126,16 @@ public class LoginHandler extends HttpServlet {
 
     //데이터베이스에서 마지막으로 비밀번호를 변경한 날짜로부터 몇일이 지났는지 받아온다.
 
-    int getPwdChangedDate(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String userid, Log log) throws SQLException{
+    int getPwdChangedDate(HttpServletRequest request, HttpServletResponse response, PrintWriter out, String userid) throws SQLException{
        Connection conn = null;
         try{
             //DBCP데이터베이스 기법 사용
             //데이터베이스 정보는 context.xml에 있음
 
             //Context 와 Datasource 검색
-            log.info("database connect");
+            logger.info("database connect");
             String JNDIname = "java:/comp/env/jdbc/Webmail";
-            log.info(userid);
+            logger.info(userid);
             String userID = userid;
             javax.naming.Context ctx = new javax.naming.InitialContext();
             javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
@@ -151,7 +149,7 @@ public class LoginHandler extends HttpServlet {
             String sql = "select datediff(now(), mDate), mDate from backup_usersupdate where username = "
                     + "'" + userID + "'"
                     +" order by mDate desc limit 1";
-            log.info(sql);
+            //logger.info(sql);
             ResultSet rs = stmt.executeQuery(sql);
             
             int resultdate;
@@ -159,7 +157,7 @@ public class LoginHandler extends HttpServlet {
             if(rs.next())
             {
                 resultdate = rs.getInt(1);
-                log.info(resultdate);
+                logger.info(Integer.toString(resultdate));
             }
             else
                 resultdate=0;
@@ -171,8 +169,8 @@ public class LoginHandler extends HttpServlet {
             return resultdate;
         }
         catch(SQLException | NamingException ex){
-            log.info("database connect failed");
-            log.info(ex.getMessage());
+            logger.info("database connect failed");
+            logger.info(ex.getMessage());
             out.println("오류가 발생했습니다.(발생 오류:" + ex.getMessage()+")");
             return 0;
         } finally {

@@ -25,6 +25,10 @@
         <servlet-name>TemporaryHandler</servlet-name>
         <servlet-class>cse.maven_webmail.control.TemporaryHandler</servlet-class>
     </servlet>
+    <error-page>
+        <error-code>500</error-code>
+        <location>/session_error.jsp</location>
+    </error-page>
     <servlet-mapping>
         <servlet-name>LoginHandler</servlet-name>
         <url-pattern>/Login.do</url-pattern>

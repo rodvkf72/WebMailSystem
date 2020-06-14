@@ -18,12 +18,9 @@ import javax.servlet.http.HttpSession;
 import cse.maven_webmail.model.Pop3Agent;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,11 +81,7 @@ public class ReadMailHandler extends HttpServlet {
             request.setCharacterEncoding("UTF-8");
             // LJM 041203 - 아래와 같이 해서 한글파일명 제대로 인식되는 것 확인했음.
             String fileName = request.getParameter("filename");
-            //String outfileName = XSSFilter.Filter(">>>>>> DOWNLOAD: file name = " + fileName);
-
             String sentDate = request.getParameter("date");
-            //String outfileName = XSSFilter.Filter(">>>>>> DOWNLOAD: file name = " + fileName);
-            //위 소스 있으니까 에러가 생겨서 주석처리 했습니다ㅜㅜ 
 
             //logger.info(outfileName);
             // fileName에 있는 ' '는 '+'가 파라미터로 전송되는 과정에서 변한 것이므로
@@ -106,12 +99,6 @@ public class ReadMailHandler extends HttpServlet {
             // 윈도우즈 환경 사용시
             String downloadDir = DBInfo.downloadTempDir;
             // LJM 090430 : 수정해야 할 부분 - end   ------------------
-
-//            response.setHeader("Content-Disposition", "attachment; filename=" +
-//                    MimeUtility.encodeText(fileName) + ";");
-
-//            response.setHeader("Content-Disposition", "attachment; filename=" +
-//                    MimeUtility.encodeText(fileName, "UTF-8", "B") + ";");
 
             response.setHeader("Content-Disposition", "attachment; filename="
                     + URLEncoder.encode(fileName, "UTF-8") + ";");

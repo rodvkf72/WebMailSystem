@@ -5,24 +5,18 @@
 package cse.maven_webmail.model;
 
 import com.sun.mail.smtp.SMTPMessage;
-import cse.maven_webmail.control.WriteMailHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.Properties;
-import java.util.logging.Level;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -30,8 +24,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,14 +44,8 @@ public class SmtpAgent {
     protected Multipart mp;
 
     private static final Logger logger = LoggerFactory.getLogger(SmtpAgent.class);
-<<<<<<< HEAD
-    protected File attachedFile = null;
-=======
-
     protected File attachedFile = null;
     protected File f = null;
-
->>>>>>> 138c8473369c59ac71a1847f6a789a2642925647
 
     public SmtpAgent(String host, String userid) {
         this.host = host;
@@ -146,23 +132,17 @@ public class SmtpAgent {
                 DataSource src = new FileDataSource(this.file);
                 try {
                     a1.setDataHandler(new DataHandler(src));
-                } catch (MessagingException ex) {
-                    java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                int index = this.file.lastIndexOf('/');
-                String fileName = this.file.substring(index + 1);
-                try {
+                    
+                    int index = this.file.lastIndexOf('/');
+                    String fileName = this.file.substring(index + 1);
+                    
                     // "B": base64, "Q": quoted-printable
                     a1.setFileName(MimeUtility.encodeText(fileName, "UTF-8", "B"));
-                } catch (UnsupportedEncodingException ex) {
-                    java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (MessagingException ex) {
-                    java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                try {
+                
                     mtp.addBodyPart(a1);
-                } catch (MessagingException ex) {
-                    java.util.logging.Logger.getLogger(SmtpAgent.class.getName()).log(Level.SEVERE, null, ex);
+                    
+                } catch (Exception ex) {
+                    logger.error("Inner class : " + ex.toString());
                 }
             }
         }
@@ -187,7 +167,6 @@ public class SmtpAgent {
             SMTPMessage msg = new SMTPMessage(session);
 
             mp = new MimeMultipart();
-
 
             Runnable r = new Inner(this.file1, mp);
             Runnable r2 = new Inner(this.file2, mp);
@@ -259,7 +238,6 @@ public class SmtpAgent {
                 a2.setFileName(MimeUtility.encodeText(fileName2, "UTF-8", "B"));
                 mp.addBodyPart(a2);
             }*/
-
             // 첨부 파일 추가
             t.join();
             t2.join();
@@ -270,16 +248,11 @@ public class SmtpAgent {
 
             // 메일 전송 완료되었으므로 서버에 저장된
             // 첨부 파일 삭제함
-<<<<<<< HEAD
             if (this.file1 != null) {
-=======
 
-            f = new File(this.file1);
-           logger.info("save the sentmail start");
-            boolean sentinsertsuccess = savesentmail();
-            logger.info("sent mail insert success = " + sentinsertsuccess);
-            
-            /*if (this.file1 != null) {
+                f = new File(this.file1);
+
+                /*if (this.file1 != null) {
 >>>>>>> 138c8473369c59ac71a1847f6a789a2642925647
                 File f = new File(this.file1);
                 boolean sentinsertsuccess = savesentmail(f);
@@ -296,14 +269,12 @@ public class SmtpAgent {
             else{
                  status = true;
             }
-            
-            
-            if (this.file2 != null) {
-                File f = new File(this.file2);
-                if (!f.delete()){
-                    logger.error(this.file2 + "not yet2");
-                }
+                 */
             }
+            logger.info("save the sentmail start");
+            boolean sentinsertsuccess = savesentmail();
+            logger.info("sent mail insert success = " + sentinsertsuccess);
+
             status = true;
 
         } catch (Exception ex) {
@@ -313,13 +284,11 @@ public class SmtpAgent {
         }
     }  // sendMessage()
 
-    boolean savesentmail() throws SQLException{
-        
-        Log log = LogFactory.getLog(SmtpAgent.class);
+    boolean savesentmail() throws SQLException {
         Statement stmt = null;
         Connection conn = null;
 
-        try{
+        try {
             String userId = userid;
             String toAddress = to;
             String ccAddress = cc;
@@ -329,26 +298,25 @@ public class SmtpAgent {
 
             String filename = "";
             File attachedfile = null;
-            
-        /*
+
+            /*
             String filename = fname.substring(fname.lastIndexOf("/")+1);
             File attachedfile = file;
        
             int fileLength = (int) attachedfile.length();
 
             InputStream ins = new FileInputStream(attachedfile);
- */
-
+             */
             //DBCP데이터베이스 기법 사용
             //데이터베이스 정보는 context.xml에 있음
             //Context 와 Datasource 검색
-            log.info("try to connect the database to save sent mail...");
+            logger.info("try to connect the database to save sent mail...");
 
             String JNDIname = "java:/comp/env/jdbc/Webmail";
-            log.info(userId);
+            logger.info(userId);
 
             javax.naming.Context ctx = new javax.naming.InitialContext();
-            javax.sql.DataSource ds = (javax.sql.DataSource)ctx.lookup(JNDIname);
+            javax.sql.DataSource ds = (javax.sql.DataSource) ctx.lookup(JNDIname);
 
             //Connection 객체 생성
             conn = ds.getConnection();
@@ -356,7 +324,6 @@ public class SmtpAgent {
             stmt = conn.createStatement();
 
             //SQL 질의 실행
-
             String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_name, file_body, saveDate) VALUES ("
                     + "HEX(AES_ENCRYPT('" + userId + "', 'sender')),"
                     + "HEX(AES_ENCRYPT('" + toAddress + "', 'recipient')),"
@@ -366,50 +333,47 @@ public class SmtpAgent {
                     + "?, ?, + now());";
 
             //String sql = "INSERT INTO sent_mail_inbox (sender, recipients, CarbonCopy, message_name, message_body, file_body, saveDate) VALUES(HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)), HEX(AES_ENCRYPT(?, ?)),HEX(AES_ENCRYPT(?, ?)), ?, now());";
-           // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";
+            // String sql = "INSERT INTO attachedfiletbl (filename, filebody) VALUES(?, ?);";
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
 
-           java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            if (f == null) {
 
-           if(f == null){
-              
                 pstmt.setNull(1, Types.VARCHAR);
-               // pstmt.setBinaryStream(2, ins, fileLength);
+                // pstmt.setBinaryStream(2, ins, fileLength);
                 pstmt.setNull(2, Types.BLOB);
-            }
-            else{
+            } else {
                 attachedfile = f;
                 int fileLength = (int) attachedfile.length();
                 InputStream ins = new FileInputStream(attachedfile);
-                
-                filename = fname.substring(fname.lastIndexOf("/")+1);
-                log.info(filename);
+
+                filename = fname.substring(fname.lastIndexOf("/") + 1);
+                logger.info(filename);
                 pstmt.setString(1, filename);
                 pstmt.setBinaryStream(2, ins, fileLength);
             }
-           
-            log.info(sql);
+
+            logger.info(sql);
 
             pstmt.execute();
-            
-            log.info("database connect success");
+
+            logger.info("database connect success");
             return true;
-        }
-        catch(Exception ex){
-            log.info("database connect failed");
+        } catch (Exception ex) {
+            logger.info("database connect failed");
             logger.info(ex.getMessage());
             //log.info(ex.getMessage());
-            
+
             return false;
-        }
-        finally{
-             if (stmt != null)
+        } finally {
+            if (stmt != null) {
                 stmt.close();
-             if (conn != null)
-                 conn.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
 
         }
 
     }
-
 
 }

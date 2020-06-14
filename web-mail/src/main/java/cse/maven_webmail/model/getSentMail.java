@@ -6,21 +6,13 @@
 
 package cse.maven_webmail.model;
 
-import cse.maven_webmail.control.CommandType;
-import cse.maven_webmail.control.LoginHandler;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.activation.DataHandler;
-import javax.mail.internet.MimeUtility;
 import javax.naming.NamingException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -30,11 +22,7 @@ import org.apache.commons.logging.LogFactory;
 public class getSentMail {
     
     //private final String downloadTempDir = "C:/temp/download/";
-    Log log = LogFactory.getLog(getSentMail.class);
-    
-    public getSentMail() {
-        
-    }
+    private static final Logger log = LoggerFactory.getLogger(getSentMail.class);
     
     
     public String getSentMessageList(String userid) throws SQLException, NamingException{
