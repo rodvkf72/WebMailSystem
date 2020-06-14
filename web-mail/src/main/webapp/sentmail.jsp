@@ -30,10 +30,7 @@
         <div id="main">
 
             <script>
- 
-                    
                     history.replaceState({}, null, location.pathname);
-            
             </script>
             
             <% if(status != null){
@@ -45,10 +42,7 @@
                         out.println("<script>alert('메일 삭제 성공');</script>");
                         status = null;
                     }
-                   
-            }
-                
-                                %>
+            }%>
 
             <% String userid = (String)session.getAttribute("userid"); %>
             <%= sentmail.getSentMessageList(userid) %>
