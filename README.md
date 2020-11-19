@@ -46,10 +46,10 @@ JSP를 활용한 웹 메일 시스템 유지/보수 입니다.
 <br>  
 
 
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99666621-8e006a00-2aae-11eb-825e-2590a14728ee.png)  
-  ▲ Yasca 사용 모습
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99666621-8e006a00-2aae-11eb-825e-2590a14728ee.png)  
+▲ Yasca 사용 모습
+ 
 <br>
 
 
