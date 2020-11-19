@@ -54,7 +54,6 @@ JSP를 활용한 웹 메일 시스템 유지/보수 입니다.
 
 
 
-<center>test</center>
 ![image](https://user-images.githubusercontent.com/48707324/99666662-9ce71c80-2aae-11eb-80fc-1d46159e1665.png)  
 ▲ SonarQube 사용 모습   
 <br>
@@ -69,17 +68,15 @@ JSP를 활용한 웹 메일 시스템 유지/보수 입니다.
 <br>
 
 
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99668330-eb95b600-2ab0-11eb-9091-a93ea9b3abe6.png)  
-  ▲ 본문 문석
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99668330-eb95b600-2ab0-11eb-9091-a93ea9b3abe6.png)  
+▲ 본문 문석  
 <br>
 
 
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99668420-0d8f3880-2ab1-11eb-97d8-40c6e6b26816.png)  
-  ▲ 시스템 시퀀스 다이어그램  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99668420-0d8f3880-2ab1-11eb-97d8-40c6e6b26816.png)  
+▲ 시스템 시퀀스 다이어그램   
 <br>
 <br>
 <br>
@@ -90,17 +87,15 @@ JSP를 활용한 웹 메일 시스템 유지/보수 입니다.
 <br>
 
 
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99669412-5c899d80-2ab2-11eb-97de-c5e6b394426c.png)  
-  ▲ 전체적인 시스템 테스트 케이스  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99669412-5c899d80-2ab2-11eb-97de-c5e6b394426c.png)  
+▲ 전체적인 시스템 테스트 케이스    
 <br>
 
 
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99669522-893db500-2ab2-11eb-8ee3-f8bf8de54e17.png)  
-  ▲ 시스템 테스트 케이스의 일부  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99669522-893db500-2ab2-11eb-8ee3-f8bf8de54e17.png)  
+▲ 시스템 테스트 케이스의 일부  
 <br>
 <br>
 <br>
@@ -112,17 +107,15 @@ JSP를 활용한 웹 메일 시스템 유지/보수 입니다.
 <br>
 
 
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99670543-0ddd0300-2ab4-11eb-9bb7-ed66ffdb7de2.png)  
-  ▲ 안전한 비밀번호 예시  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99670543-0ddd0300-2ab4-11eb-9bb7-ed66ffdb7de2.png)  
+▲ 안전한 비밀번호 예시    
 <br>
 
 
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99670788-6b714f80-2ab4-11eb-9cd5-f78b9d47cf84.png)  
-  ▲ 에러 페이지 설계  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99670788-6b714f80-2ab4-11eb-9cd5-f78b9d47cf84.png)  
+▲ 에러 페이지 설계   
 <br>
 <br>
 <br>
@@ -133,23 +126,19 @@ JSP를 활용한 웹 메일 시스템 유지/보수 입니다.
 
 
 - WBS  
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99670921-a1163880-2ab4-11eb-9afc-c99704cf647b.png)  
-</center>  
+![image](https://user-images.githubusercontent.com/48707324/99670921-a1163880-2ab4-11eb-9afc-c99704cf647b.png)    
 <br>
 
 
 - 최소 소요기간 산정  
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99670954-ad01fa80-2ab4-11eb-8a54-878d02ff816a.png)  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99670954-ad01fa80-2ab4-11eb-8a54-878d02ff816a.png)    
 <br>
 
 
 - 간트 차트  
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99670984-b8edbc80-2ab4-11eb-9f92-18cbba2990a7.png)  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99670984-b8edbc80-2ab4-11eb-9f92-18cbba2990a7.png)  
 <br>
 <br>
 <br>
@@ -159,13 +148,11 @@ JSP를 활용한 웹 메일 시스템 유지/보수 입니다.
 <br>
 
 - Git  
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99671106-eaff1e80-2ab4-11eb-8b16-d23115e4af94.png)  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99671106-eaff1e80-2ab4-11eb-8b16-d23115e4af94.png)    
 <br>
 
 
 - Notion  
-<center>
-  ![image](https://user-images.githubusercontent.com/48707324/99671198-0b2edd80-2ab5-11eb-9910-202e8b43bd14.png)  
-</center>  
+
+![image](https://user-images.githubusercontent.com/48707324/99671198-0b2edd80-2ab5-11eb-9910-202e8b43bd14.png)   
